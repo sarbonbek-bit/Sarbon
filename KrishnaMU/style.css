@@ -1,0 +1,17 @@
+body {
+  background-color: #f0f8ff;
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+h1 {
+  color: darkblue;
+}
+
+p {
+  font-size: 18px;
+  color: rgba(255, 0, 0, 0.825);
+}
+p1 {font-size: 20px;
+  color: yellow;
+}
