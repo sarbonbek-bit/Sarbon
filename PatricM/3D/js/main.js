@@ -1,6 +1,17 @@
 var world = document.getElementById("world");
+var container = document.getElementById("container");
 
-function player(x, y, z, rx, ry, vx, vy, vz){
+//
+var lock = false;
+document.addEventListener("pointerlockchange", (event) => {
+    lock = !lock;
+})
+container.onclick = function () {
+    if (!lock) container.requestPointerLock();
+}
+//
+
+function player(x, y, z, rx, ry, vx, vy, vz) {
     this.x = x;
     this.y = y;
     this.z = z;
@@ -22,32 +33,33 @@ drawMyWorld(myRoom, "wall")
 
 var pressForward = pressBack = pressRight = pressLeft = 0;
 var mouseX = mouseY = 0;
+var mouseSensitivity = 0.5;
 
 document.addEventListener("keydown", (event) => {
-    if(event.key == "w"){
+    if (event.key == "w") {
         pressForward = pawn.vz;
     }
-    if(event.key == "s"){
+    if (event.key == "s") {
         pressBack = pawn.vz;
     }
-    if(event.key == "d"){
+    if (event.key == "d") {
         pressRight = pawn.vx;
     }
-    if(event.key == "a"){
+    if (event.key == "a") {
         pressLeft = pawn.vx;
     }
 })
 document.addEventListener("keyup", (event) => {
-if(event.key == "w"){
+    if (event.key == "w") {
         pressForward = 0;
     }
-    if(event.key == "s"){
+    if (event.key == "s") {
         pressBack = 0;
     }
-    if(event.key == "d"){
+    if (event.key == "d") {
         pressRight = 0;
     }
-    if(event.key == "a"){
+    if (event.key == "a") {
         pressLeft = 0;
     }
 })
@@ -56,19 +68,21 @@ document.addEventListener("mousemove", (event) => {
     mouseY = event.movementY;
 })
 
-function update(){
+function update() {
     let dz = pressForward - pressBack;
     let dx = pressRight - pressLeft;
-    let drx = mouseY;
-    let dry = mouseX;
+    let drx = mouseY * mouseSensitivity;
+    let dry = mouseX * mouseSensitivity;
 
     mouseX = mouseY = 0;
 
     pawn.z += dz;
     pawn.x += dx;
 
-    pawn.rx += drx;
-    pawn.ry += dry;
+    if (lock) {
+        pawn.rx += drx;
+        pawn.ry += dry;
+    }
 
     world.style.transform = `translateZ(600px) rotateX(${-pawn.rx}deg) rotateY(${pawn.ry}deg) translate3d(${-pawn.x}px, ${pawn.y}px, ${pawn.z}px)`;
 }
