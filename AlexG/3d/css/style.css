@@ -1,0 +1,16 @@
+#container{
+    position: absolute;
+    width: 1200px;
+    height: 700px;
+    border: 2px solid #000;
+    perspective:  600px;
+    overflow: hidden;
+}
+
+#world{
+    position: absolute;
+    width: inherit;
+    height: inherit;
+    transform-style: preserve-3d;
+    transform: rotateY(0deg) rotateX(0deg) rotateZ(0deg);
+}
