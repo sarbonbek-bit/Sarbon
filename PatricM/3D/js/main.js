@@ -1,3 +1,4 @@
+const DEG = Math.PI/180;
 var world = document.getElementById("world");
 var container = document.getElementById("container");
 
@@ -22,7 +23,7 @@ function player(x, y, z, rx, ry, vx, vy, vz) {
     this.vz = vz;
 }
 
-var pawn = new player(0, 0, 0, 0, 0, 5, 5, 5);
+var pawn = new player(0, 0, 0, 0, 0, 7, 7, 7);
 
 let myRoom = [
     [0, 100, 0, 90, 0, 0, 2000, 2000, "brown", 1, "url('textures/floor_01.jpg')"],
@@ -33,7 +34,7 @@ drawMyWorld(myRoom, "wall")
 
 var pressForward = pressBack = pressRight = pressLeft = 0;
 var mouseX = mouseY = 0;
-var mouseSensitivity = 0.5;
+var mouseSensitivity = 1;
 
 document.addEventListener("keydown", (event) => {
     if (event.key == "w") {
@@ -69,8 +70,13 @@ document.addEventListener("mousemove", (event) => {
 })
 
 function update() {
-    let dz = pressForward - pressBack;
-    let dx = pressRight - pressLeft;
+    let dz = +(pressRight - pressLeft) * Math.sin(pawn.ry * DEG) - (pressForward - pressBack) * Math.cos(pawn.ry * DEG) ;
+    let dx = +(pressRight - pressLeft) * Math.cos(pawn.ry * DEG) + (pressForward - pressBack) * Math.sin(pawn.ry * DEG)  ;
+
+    //   dx = -(pressLeft - pressRight) * Math.cos(pawn.ry * deg) + (pressForward - pressBack) * Math.sin(pawn.ry * deg);
+    //let dz = pressForward - pressBack;
+    // dz = -(pressLeft - pressRight) * Math.sin(pawn.ry * deg) - (pressForward - pressBack) * Math.cos(pawn.ry * deg);
+
     let drx = mouseY * mouseSensitivity;
     let dry = mouseX * mouseSensitivity;
 
@@ -84,7 +90,7 @@ function update() {
         pawn.ry += dry;
     }
 
-    world.style.transform = `translateZ(600px) rotateX(${-pawn.rx}deg) rotateY(${pawn.ry}deg) translate3d(${-pawn.x}px, ${pawn.y}px, ${pawn.z}px)`;
+    world.style.transform = `translateZ(600px) rotateX(${-pawn.rx}deg) rotateY(${pawn.ry}deg) translate3d(${-pawn.x}px, ${pawn.y}px, ${-pawn.z}px)`;
 }
 
 let game = setInterval(update, 10);
