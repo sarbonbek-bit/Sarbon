@@ -1,15 +1,17 @@
 var world = document.getElementById("world");
 
-function player(x, y, z, vx, vy, vz){
+function player(x, y, z, rx, ry, vx, vy, vz){
     this.x = x;
     this.y = y;
     this.z = z;
+    this.rx = rx;
+    this.ry = ry;
     this.vx = vx;
     this.vy = vy;
     this.vz = vz;
 }
 
-var pawn = new player(0, 0, 0, 5, 5, 5);
+var pawn = new player(0, 0, 0, 0, 0, 5, 5, 5);
 
 let myRoom = [
     [0, 100, 0, 90, 0, 0, 2000, 2000, "brown", 1, "url('textures/floor_01.jpg')"],
@@ -18,9 +20,8 @@ let myRoom = [
 
 drawMyWorld(myRoom, "wall")
 
-// let drx = 0;
-
-var pressForward = pressBack = 0;
+var pressForward = pressBack = pressRight = pressLeft = 0;
+var mouseX = mouseY = 0;
 
 document.addEventListener("keydown", (event) => {
     if(event.key == "w"){
@@ -29,14 +30,12 @@ document.addEventListener("keydown", (event) => {
     if(event.key == "s"){
         pressBack = pawn.vz;
     }
-    // if (event.key == "ArrowUp") {
-    //     drx++;
-    //     world.style.transform = `rotateX(${drx}deg)`
-    // }
-    // if (event.key == "ArrowDown") {
-    //     drx--;
-    //     world.style.transform = `rotateX(${drx}deg)`
-    // }
+    if(event.key == "d"){
+        pressRight = pawn.vx;
+    }
+    if(event.key == "a"){
+        pressLeft = pawn.vx;
+    }
 })
 document.addEventListener("keyup", (event) => {
 if(event.key == "w"){
@@ -45,14 +44,33 @@ if(event.key == "w"){
     if(event.key == "s"){
         pressBack = 0;
     }
+    if(event.key == "d"){
+        pressRight = 0;
+    }
+    if(event.key == "a"){
+        pressLeft = 0;
+    }
+})
+document.addEventListener("mousemove", (event) => {
+    mouseX = event.movementX;
+    mouseY = event.movementY;
 })
 
 function update(){
     let dz = pressForward - pressBack;
+    let dx = pressRight - pressLeft;
+    let drx = mouseY;
+    let dry = mouseX;
+
+    mouseX = mouseY = 0;
 
     pawn.z += dz;
+    pawn.x += dx;
 
-    world.style.transform = `translate3d(${pawn.x}px, ${pawn.y}px, ${pawn.z}px)`;
+    pawn.rx += drx;
+    pawn.ry += dry;
+
+    world.style.transform = `translateZ(600px) rotateX(${-pawn.rx}deg) rotateY(${pawn.ry}deg) translate3d(${-pawn.x}px, ${pawn.y}px, ${pawn.z}px)`;
 }
 
 let game = setInterval(update, 10);
