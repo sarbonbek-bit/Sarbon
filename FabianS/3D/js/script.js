@@ -17,25 +17,27 @@ let dx = 0;
 let dy = 0;
 let dz = 0
 
-
+let mouseSensitivity = 0.3
 let gravity = 0.2
-
+let gravity_bullet = 0.0
+let player_speed = 5
+let bulletSpeed = 13;   
 // geeignet um ausserhalb der Kontur zu sein und Features zu testen 
-let jump 
+let jump
 jump = true
 // jump = false 
 
-let move = 0;
+let move = 0.01;
 let mySquares = []
 let mouseX = 0
 let mouseY = 0;
-let mouseSensitivity = 0.5
 
 
-let onGround = false; 
+
+let onGround = false;
 
 let pressForward = 0
-let pawn 
+let pawn
 // window.pawn = pawn 
 
 let pressBack = 0
@@ -43,8 +45,11 @@ let pressRight = 0
 let pressLeft = 0;
 let pressUp = 0
 
-let lock = false 
+let lock = false
+
+
 let my_shooting_bullets = []
+let myBulletData = []
 let myBulletsShooting = 0
 // 3x3 2d Rotation
 
@@ -58,7 +63,7 @@ function player(
     vx,
     vy,
     vz
-){
+) {
     this.x = x;
     this.y = y;
     this.z = z;
@@ -67,12 +72,12 @@ function player(
     this.vx = vx;
     this.vy = vy;
     this.vz = vz;
-    this.onGround = false 
+    this.onGround = false
 }
 
 
-function update(){
-
+function update() {
+    updateBullets()
     // original
     dz = +(pressRight - pressLeft) * Math.sin(pawn.ry * DEG) - (pressForward - pressBack) * Math.cos(pawn.ry * DEG)
     dx = +(pressRight - pressLeft) * Math.cos(pawn.ry * DEG) + (pressForward - pressBack) * Math.sin(pawn.ry * DEG)
@@ -88,9 +93,9 @@ function update(){
     }
     let drx = mouseY * mouseSensitivity;
     let dry = mouseX * mouseSensitivity;
-    
+
     collision(
-        window.myRoom, 
+        window.myRoom,
         pawn
     )
 
@@ -101,10 +106,11 @@ function update(){
     pawn.x += dx;
     pawn.y += dy
 
-    
+
 
     if (lock) {
         pawn.rx += drx;
+
         if (pawn.rx > 57) {
             pawn.rx = 57;
         } else if (pawn.rx < -57) {
@@ -113,41 +119,28 @@ function update(){
         pawn.ry += dry;
     }
 
-
     document.onclick = function () {
-        if(lock){
-            let position = pawn
-            
-            my_shooting_bullets.push(
-                drawMyBullet(myBulletsShooting++)
+        if (lock) {
+            let newBullet = drawMyBullet(myBulletsShooting++)
+            my_shooting_bullets.push(newBullet)
+
+            myBulletData.push(
+                new player(pawn.x, pawn.y, pawn.z, pawn.rx, pawn.ry, bulletSpeed, bulletSpeed, bulletSpeed)
             )
-            
+
         }
+
     }
-    if(jump){
-        world.style.transform = `
-            translateZ(600px) 
-            rotateX(${-pawn.rx}deg) 
-            rotateY(${pawn.ry}deg) 
-            translate3d(
-                ${-pawn.x}px, 
-                ${-pawn.y}px
-                ,${-pawn.z}px
-            )
-        `;
-    }
-    else{
-        world.style.transform = `
-            translateZ(600px) 
-            rotateX(${-pawn.rx}deg) 
-            rotateY(${pawn.ry}deg) 
-            translate3d(
-                ${-pawn.x}px, 
-                0px
-                ,${-pawn.z}px
-            )
-        `; 
-    }
+    world.style.transform = `
+        translateZ(600px) 
+        rotateX(${-pawn.rx}deg) 
+        rotateY(${pawn.ry}deg) 
+        translate3d(
+            ${-pawn.x}px, 
+            ${-pawn.y}px
+            ,${-pawn.z}px
+        )
+    `;
 
     // interactTeleport(spelesElementi[level][2], izvObj)
 }
@@ -158,54 +151,29 @@ let game = setInterval(
     update,
     10
 );
-if(jump){
-    pawn = new player(
-        0,
-        0,
-        0,
-        0,
-        -90,// Rotation um y
-        7,
-        7,
-        7
-    );
-}
-else{
-    pawn = new player(
-        -2000,
-        0,
-        0,
-        0,
-        0,
-        7,
-        7,
-        7
-    );
-}
+
+pawn = new player(
+    0,
+    0,
+    0,
+    0,
+    -90,// Rotation um y
+    player_speed,
+    player_speed,
+    player_speed
+);
 
 
 document.addEventListener("pointerlockchange", (event) => {
     lock = !lock;
 })
 container.onclick = function () {
-    if(!lock){
+    if (!lock) {
         container.requestPointerLock();
     }
 }
 
 
-
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// draw My World
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-
-// Würfel 
-// drawMyWorld(squares, "MMM");
 
 
 
@@ -216,16 +184,16 @@ container.onclick = function () {
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 document.addEventListener("keydown", (event) => {
-    if(event.key == "w"){
+    if (event.key == "w") {
         pressForward = pawn.vz;
     }
-    if(event.key == "s"){
+    if (event.key == "s") {
         pressBack = pawn.vz;
     }
-    if(event.key == "d"){
+    if (event.key == "d") {
         pressRight = pawn.vx;
     }
-    if(event.key == "a"){
+    if (event.key == "a") {
         pressLeft = pawn.vx;
     }
     if (event.key == " ") {
@@ -235,16 +203,16 @@ document.addEventListener("keydown", (event) => {
 })
 
 document.addEventListener("keyup", (event) => {
-if(event.key == "w"){
+    if (event.key == "w") {
         pressForward = 0;
     }
-    if(event.key == "s"){
+    if (event.key == "s") {
         pressBack = 0;
     }
-    if(event.key == "d"){
+    if (event.key == "d") {
         pressRight = 0;
     }
-    if(event.key == "a"){
+    if (event.key == "a") {
         pressLeft = 0;
     }
     if (event.key == " ") {
@@ -253,7 +221,10 @@ if(event.key == "w"){
     }
 })
 
-document.addEventListener("mousemove",(event) => {
+document.addEventListener("mousemove", (event) => {
     mouseX = event.movementX;
     mouseY = event.movementY;
 })
+
+
+
