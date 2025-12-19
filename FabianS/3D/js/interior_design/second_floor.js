@@ -23,7 +23,6 @@ function second_floor_front_and_behind() {
         let x_abstand = x;
         let y_abstand = y;
         let z_abstand = z;
-        console.log(x, y, z, abstaende.length)
         let add_wall = [
             // floor 
             [
@@ -445,7 +444,6 @@ function bruecken() {
             //     floor
             // ],
         ]
-        console.log("Brücke")
         allSteps.push(...step);
     }
     return allSteps
@@ -543,7 +541,6 @@ function wuerfel() {
                 floor
             ],
         ]
-        console.log("Brücke")
         allSteps.push(...step);
     }
     return allSteps
@@ -762,7 +759,6 @@ function tunnel() {
             //     // floor
             // ],
         ]
-        console.log("Brücke")
         allSteps.push(...step);
     }
     return allSteps

@@ -44,7 +44,8 @@ let pressLeft = 0;
 let pressUp = 0
 
 let lock = false 
-
+let my_shooting_bullets = []
+let myBulletsShooting = 0
 // 3x3 2d Rotation
 
 // Konstruktor
@@ -71,6 +72,7 @@ function player(
 
 
 function update(){
+
     // original
     dz = +(pressRight - pressLeft) * Math.sin(pawn.ry * DEG) - (pressForward - pressBack) * Math.cos(pawn.ry * DEG)
     dx = +(pressRight - pressLeft) * Math.cos(pawn.ry * DEG) + (pressForward - pressBack) * Math.sin(pawn.ry * DEG)
@@ -80,7 +82,6 @@ function update(){
     if (onGround) {
         dy = 0;
         if (pressUp) {
-            console.log("jump");
             dy = -pressUp;
             onGround = false;
         }
@@ -113,7 +114,16 @@ function update(){
     }
 
 
-
+    document.onclick = function () {
+        if(lock){
+            let position = pawn
+            
+            my_shooting_bullets.push(
+                drawMyBullet(myBulletsShooting++)
+            )
+            
+        }
+    }
     if(jump){
         world.style.transform = `
             translateZ(600px) 

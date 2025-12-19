@@ -10,7 +10,7 @@ if (txtImg.complete) ctx2.drawImage(txtImg, 560, 1380);
 else txtImg.onload = ()=> ctx2.drawImage(txtImg, 560, 1380);
 
 for (let i = 0; i < 1300; i++){
-  console.log("asgnslö")
+
   makeFlake(i, true);
 } 
 
