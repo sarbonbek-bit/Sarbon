@@ -7,6 +7,7 @@ myRoom = window.myRoom;
 let step_temp
 let allSteps = [];
 let addition_walls = []
+
 let faktor_y = 100
 let faktor_x = 400
 let faktor_z = 400

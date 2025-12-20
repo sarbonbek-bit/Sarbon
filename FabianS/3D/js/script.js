@@ -5,9 +5,19 @@
 // https://www.fr.de/panorama/geschichte-vom-louvre-passwort-bis-zu-den-atom-codes-die-schlimmsten-security-fails-der-94028611.html
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 const DEG = Math.PI / 180;
-
+let dzb
+let dxb
 let container = document.getElementById("container")
 var world = document.getElementById("world");
+let points_anzeige = document.getElementById("points")
+let height_anzeige = document.getElementById("height")
+let x_anzeige = document.getElementById("x")
+let y_anzeige = document.getElementById("y")
+let dx_anzeige = document.getElementById("dx")
+let dz_anzeige = document.getElementById("dz")
+update_points(0)
+
+
 
 
 let drx = 0;
@@ -21,13 +31,15 @@ let mouseSensitivity = 0.3
 let gravity = 0.2
 let gravity_bullet = 0.0
 let player_speed = 5
-let bulletSpeed = 13;   
+let bulletSpeed = 13;
+let move = 0.01;
+
 // geeignet um ausserhalb der Kontur zu sein und Features zu testen 
 let jump
 jump = true
 // jump = false 
 
-let move = 0.01;
+
 let mySquares = []
 let mouseX = 0
 let mouseY = 0;
@@ -47,6 +59,9 @@ let pressUp = 0
 
 let lock = false
 
+let my_items = []
+let myItemsData = []
+let myItemsCounter = 0
 
 let my_shooting_bullets = []
 let myBulletData = []
@@ -77,8 +92,11 @@ function player(
 
 
 function update() {
+    points_anzeige.textContent = (
+        "Points: "
+    )
+    // show_position()
     updateBullets()
-    // original
     dz = +(pressRight - pressLeft) * Math.sin(pawn.ry * DEG) - (pressForward - pressBack) * Math.cos(pawn.ry * DEG)
     dx = +(pressRight - pressLeft) * Math.cos(pawn.ry * DEG) + (pressForward - pressBack) * Math.sin(pawn.ry * DEG)
     dy += gravity;
@@ -120,14 +138,25 @@ function update() {
     }
 
     document.onclick = function () {
+
+
+
         if (lock) {
             let newBullet = drawMyBullet(myBulletsShooting++)
             my_shooting_bullets.push(newBullet)
 
             myBulletData.push(
-                new player(pawn.x, pawn.y, pawn.z, pawn.rx, pawn.ry, bulletSpeed, bulletSpeed, bulletSpeed)
+                new player(
+                    pawn.x,
+                    pawn.y,
+                    pawn.z,
+                    pawn.rx,
+                    pawn.ry,
+                    bulletSpeed,
+                    bulletSpeed,
+                    bulletSpeed
+                )
             )
-
         }
 
     }
@@ -141,8 +170,10 @@ function update() {
             ,${-pawn.z}px
         )
     `;
-
-    // interactTeleport(spelesElementi[level][2], izvObj)
+    if (myBulletData.length > 1) {
+        is_hidden(myItemsData)
+    }
+    
 }
 
 
@@ -197,9 +228,9 @@ document.addEventListener("keydown", (event) => {
         pressLeft = pawn.vx;
     }
     if (event.key == " ") {
-        // console.log("pressUP"),
         pressUp = pawn.vy;
     }
+
 })
 
 document.addEventListener("keyup", (event) => {
@@ -216,7 +247,6 @@ document.addEventListener("keyup", (event) => {
         pressLeft = 0;
     }
     if (event.key == " ") {
-        // console.log("asda")
         pressUp = 0;
     }
 })
@@ -227,4 +257,38 @@ document.addEventListener("mousemove", (event) => {
 })
 
 
+function update_points(num) {
+    points_anzeige.textContent = `Points: ${num}`
+}
 
+
+function add_items() {
+    let [header, header_data] = insert_item(myItemsCounter++)
+    console.log(header)
+    my_items.push(header)
+    let item_data_for_insert = new player(header_data[0], header_data[1], header_data[2], header_data[3], header_data[4], 0, 0, 0)
+    console.log("add item", item_data_for_insert)
+    myItemsData.push(
+        //     // new player(pawn.x, pawn.y, pawn.z, pawn.rx, pawn.ry, bulletSpeed, bulletSpeed, bulletSpeed)
+        item_data_for_insert
+    )
+
+}
+
+
+
+
+
+var panemsanasSkana = new Audio;
+panemsanasSkana.src = "./audio/thing.mp3";
+
+var soluSkana = new Audio;
+soluSkana.src = "./audio/walking.mp3";
+
+var kludasSkana = new Audio;
+kludasSkana.src = "./audio/mistake.mp3"
+
+var teleportaSkana = new Audio;
+teleportaSkana.src = "./audio/win.mp3"
+
+add_items()

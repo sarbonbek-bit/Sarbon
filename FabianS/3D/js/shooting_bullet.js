@@ -13,7 +13,8 @@ function drawMyBullet(num) {
 
     shooting_bullet.style.transform = `
         translate3d(${600 + pawn.x - 25}px, 
-        ${400 + pawn.y - 25}px, ${pawn.z}px) 
+        ${400 + pawn.y - 25}px, 
+        ${pawn.z}px) 
         rotateX(${pawn.rx}deg) 
         rotateY(${-pawn.ry}deg)
     `
@@ -27,22 +28,24 @@ function drawMyBullet(num) {
 
 
 function updateBullets() {
+
     for (let i = 0; i < my_shooting_bullets.length; i++) {
-        // Calculate bullet movement 
-        let dzb = +(myBulletData[i].vx) * Math.sin((myBulletData[i].ry - 45) * DEG) - (myBulletData[i].vz) * Math.cos((myBulletData[i].ry - 45) * DEG);
-        let dxb = +(myBulletData[i].vx) * Math.cos((myBulletData[i].ry - 45) * DEG) + (myBulletData[i].vz) * Math.sin((myBulletData[i].ry - 45) * DEG);
         
-        // Update bullet position
+        
+        dzb = +(myBulletData[i].vx) * Math.sin((myBulletData[i].ry - 45) * DEG) - (myBulletData[i].vz) * Math.cos((myBulletData[i].ry - 45) * DEG);
+        dxb = +(myBulletData[i].vx) * Math.cos((myBulletData[i].ry - 45) * DEG) + (myBulletData[i].vz) * Math.sin((myBulletData[i].ry - 45) * DEG);
+        
+        
         myBulletData[i].x += dxb;
         myBulletData[i].z += dzb;
         
-        // Add some gravity to bullets
         myBulletData[i].y += gravity_bullet;
         
-        // Update bullet rotation for visual spin (optional)
-        // myBulletData[i].ry += 10; // Uncomment for spinning effect
+        // collision(
+        //     myBulletData[i], 
+        //     myItemsData
+        // )
         
-        // Update bullet visual position
         my_shooting_bullets[i].style.transform = 
         `
             translate3d(
@@ -54,14 +57,25 @@ function updateBullets() {
             rotateY(${-myBulletData[i].ry}deg)
         `;
         
-        // Remove bullets that are too far away
-        let distance = 2500
+        // Muss auf Fehler überprüft werden. warum es nicht funktioniert so wie gedacht
+        let distance = 3000
         if (
-            Math.abs(my_shooting_bullets[i].x) > distance 
-            || Math.abs(myBulletData[i].y) > distance 
-            || Math.abs(myBulletData[i].z) > distance
+            Math.abs(
+                my_shooting_bullets[i].x
+            ) 
+            > distance 
+            ||
+                Math.abs(
+                    myBulletData[i].y
+                ) 
+            > distance 
+            || 
+                Math.abs(
+                    myBulletData[i].z
+                ) 
+                > distance
         ) {
-            my_shooting_bullets[i].style.display = "none";
+            // my_shooting_bullets[i].style.display = "none";
             if (my_shooting_bullets[i].parentNode) {
                 my_shooting_bullets[i].parentNode.removeChild(my_shooting_bullets[i]);
             }
