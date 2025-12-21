@@ -1,8 +1,6 @@
-// js/my_room.js
 
-// import { interior_design } from "./interior_design/stair_one.js";
 
-// let world = document.getElementById("world");
+
 myRoom = window.myRoom;
 let step_temp
 let allSteps = [];

@@ -9,7 +9,9 @@ function spawnItem({ x, y, z, size = 100, rx = 0, ry = 0, rz = 0 }) {
   item.style.height = `${size}px`;
   item.style.borderRadius = "10%";
   item.style.backgroundColor = "#B5A642";
+  item.style.backgroundColor = "#B5A642";
 
+  //  myBulletsData[i].ry += 45; (SPIN)
   // Anzeige (DOM braucht bei dir +600/+400 Offset)
   item.style.transform = `
     translate3d(${600 + x - size / 2}px, ${400 + y - size / 2}px, ${z}px)
@@ -40,13 +42,41 @@ function remove_item() {
   myItemsData.splice(i, 1);
   i--;
 }
+
+function update_item() {
+  for (let c = 0; c < my_items.length; c++) {
+
+    const it = my_items[c];          // DATA
+    // updateItemTransform(it)
+    it.ry = (it.ry ?? 0) + 2;
+
+
+    const el = document.getElementById(`item_number${c}`); // DOM
+    if (!el) {
+      continue;
+    }
+
+    el.style.transform = `
+      translate3d(
+        ${600 + it.x - 25}px, 
+        ${400 + it.y - 25}px, 
+        ${it.z}px
+      )
+      rotateX(${it.rx}deg)
+      rotateY(${-it.ry}deg)
+    `;
+  }
+}
+
+
+
 function updateItemTransform(i) {
   const it = myItemsData[i];
   const el = my_items[i];
   const size = it.vx; // bei dir Größe
 
   el.style.transform = `
-    translate3d(${600 + it.x - size/2}px, ${400 + it.y - size/2}px, ${it.z}px)
+    translate3d(${600 + it.x - size / 2}px, ${400 + it.y - size / 2}px, ${it.z}px)
     rotateX(${it.rx}deg)
     rotateY(${it.ry}deg)
   `;
@@ -60,26 +90,7 @@ function showHit(text) {
   showHit._t = setTimeout(() => el.style.display = "none", 2000);
 }
 
-function is_hidden_test(itemsData) {
-  const b = myBulletData.at(-1);
-  if (!b) return;
 
-  for (let i = 0; i < itemsData.length; i++) {
-    const it = itemsData[i];
-
-    const dx = b.x - it.x;
-    const dy = b.y - it.y;
-    const dz = b.z - it.z;
-
-    const tunnel = Math.abs(b.vx) / 2;          // optional
-    const r = it.radius + 25 + tunnel;          // itemRadius + bulletRadius + puffer
-
-    if (dx * dx + dy * dy + dz * dz < r * r) {
-      console.log("ITEM GETROFFEN", i);
-      return;
-    }
-  }
-}
 function checkHits() {
   if (!myBulletData.length) return;
   if (!myItemsData.length) return;
@@ -87,7 +98,6 @@ function checkHits() {
   if (myBulletData.length && myItemsData.length) {
     const b = myBulletData.at(-1);
     const it = myItemsData[0];
-    console.log("bullet y:", b.y, "item y:", it.y, "dy:", Math.abs(b.y - it.y));
   }
 
   for (let bi = 0; bi < myBulletData.length; bi++) {
@@ -108,17 +118,16 @@ function checkHits() {
 
       if (dx * dx + dz * dz < r * r) {
         // if (dx * dx + dy * dy + dz * dz < r * r) {
-          console.log("HIT!", { bullet: bi, item: ii });
-          showHit("Item getroffen!");
-          // Item entfernen (DOM + Data)
-          if (my_items[ii]?.parentNode) my_items[ii].parentNode.removeChild(my_items[ii]);
-          my_items.splice(ii, 1);
-          myItemsData.splice(ii, 1);
+        showHit("Item getroffen!");
+        // Item entfernen (DOM + Data)
+        if (my_items[ii]?.parentNode) my_items[ii].parentNode.removeChild(my_items[ii]);
+        my_items.splice(ii, 1);
+        myItemsData.splice(ii, 1);
 
-          update_points(++counter_points)
-          thing.play()
-          return;
-        }
+        update_points(++counter_points)
+        thing.play()
+        return;
       }
     }
   }
+}

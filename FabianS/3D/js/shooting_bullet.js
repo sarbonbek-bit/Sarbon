@@ -10,8 +10,8 @@ function drawMyBullet(num) {
     shooting_bullet.style.height = `50px`;
     shooting_bullet.style.borderRadius = `50%`;
     shooting_bullet.style.backgroundColor = `#B5A642 `;
-    console.log(pawn.y)
-    // ${400 + pawn.y - 25}px, 
+
+
     shooting_bullet.style.transform = `
         translate3d(${600 + pawn.x - 25}px, 
         ${400 + pawn.y - 25}px, 
@@ -24,26 +24,14 @@ function drawMyBullet(num) {
     world.appendChild(shooting_bullet);
 
     return shooting_bullet;
-    // lode_daudzums++;
+
 }
 
 
 
 function updateBullets() {
 
-
-
-
     for (let i = 0; i < my_shooting_bullets.length; i++) {
-
-        // const b = myBulletData[i];
-        // const ry = b.ry * DEG;
-        // const rx = b.rx * DEG;
-
-        // b.x += Math.sin(ry) * Math.cos(rx) * b.vx;
-        // b.z += -Math.cos(ry) * Math.cos(rx) * b.vz;
-        // b.y += -Math.sin(rx) * b.vy;
-
 
         dzb = +(myBulletData[i].vx) * Math.sin((myBulletData[i].ry - 45) * DEG) - (myBulletData[i].vz) * Math.cos((myBulletData[i].ry - 45) * DEG);
         dxb = +(myBulletData[i].vx) * Math.cos((myBulletData[i].ry - 45) * DEG) + (myBulletData[i].vz) * Math.sin((myBulletData[i].ry - 45) * DEG);
@@ -54,14 +42,6 @@ function updateBullets() {
         myBulletData[i].z += dzb;
 
         myBulletData[i].y += gravity_bullet;
-        //(SPIN)
-        // myBulletData[i].ry += 45; 
-
-
-        // collision(
-        //     myBulletData[i], 
-        //     myItemsData
-        // )
 
         my_shooting_bullets[i].style.transform =
             `
@@ -81,11 +61,9 @@ function updateBullets() {
             Math.abs(myBulletData[i].y) > distance ||
             Math.abs(myBulletData[i].z) > distance
         ) {
-            // my_shooting_bullets[i].style.display = "none";
+
             if (my_shooting_bullets[i].parentNode) {
                 my_shooting_bullets[i].parentNode.removeChild(my_shooting_bullets[i]);
-
-
             }
             if (myBulletData[i].parentNode) {
                 myBulletData[i].parentNode.removeChild(

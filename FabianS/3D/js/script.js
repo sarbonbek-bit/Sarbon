@@ -116,9 +116,8 @@ document.onclick = function () {
 
 function update() {
 
-    // show_position()
     updateBullets()
-    // is_hidden_test(my_items, myItemsData)
+    // update_item()
     checkHits()
     dz = +(pressRight - pressLeft) * Math.sin(pawn.ry * DEG) - (pressForward - pressBack) * Math.cos(pawn.ry * DEG)
     dx = +(pressRight - pressLeft) * Math.cos(pawn.ry * DEG) + (pressForward - pressBack) * Math.sin(pawn.ry * DEG)
