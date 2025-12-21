@@ -15,9 +15,10 @@ let x_anzeige = document.getElementById("x")
 let y_anzeige = document.getElementById("y")
 let dx_anzeige = document.getElementById("dx")
 let dz_anzeige = document.getElementById("dz")
-update_points(0)
 
-
+let counter_points = 0
+update_points(counter_points)
+let lastHitId = null;
 
 
 let drx = 0;
@@ -89,14 +90,36 @@ function player(
     this.vz = vz;
     this.onGround = false
 }
+document.onclick = function () {
+    if (lock) {
+        let newBullet = drawMyBullet(myBulletsShooting++)
+        my_shooting_bullets.push(newBullet)
 
+        myBulletData.push(
+            new player(
+                pawn.x,
+                pawn.y,
+                pawn.z,
+                pawn.rx,
+                pawn.ry,
+                bulletSpeed,
+                bulletSpeed,
+                bulletSpeed
+            )
+        )
+        // if (myBulletData.length > 1) {
+
+        // }
+    }
+
+}
 
 function update() {
-    points_anzeige.textContent = (
-        "Points: "
-    )
+
     // show_position()
     updateBullets()
+    // is_hidden_test(my_items, myItemsData)
+    checkHits()
     dz = +(pressRight - pressLeft) * Math.sin(pawn.ry * DEG) - (pressForward - pressBack) * Math.cos(pawn.ry * DEG)
     dx = +(pressRight - pressLeft) * Math.cos(pawn.ry * DEG) + (pressForward - pressBack) * Math.sin(pawn.ry * DEG)
     dy += gravity;
@@ -137,29 +160,29 @@ function update() {
         pawn.ry += dry;
     }
 
-    document.onclick = function () {
+    // document.onclick = function () {
+    //     if (lock) {
+    //         let newBullet = drawMyBullet(myBulletsShooting++)
+    //         my_shooting_bullets.push(newBullet)
 
+    //         myBulletData.push(
+    //             new player(
+    //                 pawn.x,
+    //                 pawn.y,
+    //                 pawn.z,
+    //                 pawn.rx,
+    //                 pawn.ry,
+    //                 bulletSpeed,
+    //                 bulletSpeed,
+    //                 bulletSpeed
+    //             )
+    //         )
+    //         // if (myBulletData.length > 1) {
 
+    //         // }
+    //     }
 
-        if (lock) {
-            let newBullet = drawMyBullet(myBulletsShooting++)
-            my_shooting_bullets.push(newBullet)
-
-            myBulletData.push(
-                new player(
-                    pawn.x,
-                    pawn.y,
-                    pawn.z,
-                    pawn.rx,
-                    pawn.ry,
-                    bulletSpeed,
-                    bulletSpeed,
-                    bulletSpeed
-                )
-            )
-        }
-
-    }
+    // }
     world.style.transform = `
         translateZ(600px) 
         rotateX(${-pawn.rx}deg) 
@@ -170,10 +193,8 @@ function update() {
             ,${-pawn.z}px
         )
     `;
-    if (myBulletData.length > 1) {
-        is_hidden(myItemsData)
-    }
-    
+
+
 }
 
 
@@ -263,15 +284,56 @@ function update_points(num) {
 
 
 function add_items() {
-    let [header, header_data] = insert_item(myItemsCounter++)
-    console.log(header)
-    my_items.push(header)
-    let item_data_for_insert = new player(header_data[0], header_data[1], header_data[2], header_data[3], header_data[4], 0, 0, 0)
-    console.log("add item", item_data_for_insert)
-    myItemsData.push(
-        //     // new player(pawn.x, pawn.y, pawn.z, pawn.rx, pawn.ry, bulletSpeed, bulletSpeed, bulletSpeed)
-        item_data_for_insert
-    )
+    
+    spawnItem({
+        x: 0, 
+        y: 30,
+        z: -900,
+        size: 100,
+        rx: 0,   // um X-Achse kippen
+        ry: 90,
+        rz: 0
+    }); 
+    
+    
+    spawnItem({
+        x: 300, 
+        y: 30,
+        z: -700,
+        size: 100,
+        rx: 0,   // um X-Achse kippen
+        ry: 90,
+        rz: 0
+    });     
+    spawnItem({
+        x: -300, 
+        y: -140,
+        z: -700,
+        size: 100,
+        rx: 0,   // um X-Achse kippen
+        ry: 90,
+        rz: 0
+    });     
+    spawnItem({
+        x: -300, 
+        y: -200,
+        z: 900,
+        size: 100,
+        rx: 0,   // um X-Achse kippen
+        ry: 90,
+        rz: 0
+    });     
+    spawnItem({
+        x: 700, 
+        y: 30,
+        z: 900,
+        size: 100,
+        rx: 0,   // um X-Achse kippen
+        ry: 0,
+        rz: 90
+    });     
+    // spawnItem({ x: 200, y: 200, z: -600, size: 80 });      // in der Luft
+    // spawnItem({ x: -300, y: 500, z: -1200, size: 120 }); 
 
 }
 

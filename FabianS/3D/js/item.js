@@ -1,91 +1,124 @@
 
+function spawnItem({ x, y, z, size = 100, rx = 0, ry = 0, rz = 0 }) {
+  // DOM
+  const item = document.createElement("div");
+  item.id = `item_number${myItemsCounter++}`;
+  item.style.display = "block";
+  item.style.position = "absolute";
+  item.style.width = `${size}px`;
+  item.style.height = `${size}px`;
+  item.style.borderRadius = "10%";
+  item.style.backgroundColor = "#B5A642";
 
-function insert_item(number){
-    let item_size = 100
+  // Anzeige (DOM braucht bei dir +600/+400 Offset)
+  item.style.transform = `
+    translate3d(${600 + x - size / 2}px, ${400 + y - size / 2}px, ${z}px)
+    rotateX(${rx}deg)
+    rotateY(${ry}deg)
+    rotateZ(${rz}deg)
+  `;
 
-    let y_position_floor = 350 + item_size / 2
-    let y_position_second_floor = 100 + item_size / 2
+  world.appendChild(item);
 
+  // DATA: world coords (ohne 600/400), size steckt bei dir in vx
+  const data = new player(x, y, z, rx, ry, size, size, size);
 
-    let x_item = 700
-    let y_item = y_position_floor
-    let z_item = -40
-    let dx_position_item = pawn.rx
-    let dy_position_item = pawn.ry
+  my_items.push(item);
+  myItemsData.push(data);
 
-
-    var item = document.createElement("div");
-    item.id = `item_number${number}`;
-    // item.textContent = "Punkti sakrāti, var doties uz teleportu!";
-    
-    item.style.display = "block";
-    item.style.position = "absolute";
-    item.style.width = `${item_size}px`;
-    item.style.height = `${item_size}px`;
-    item.style.borderRadius = `10%`;
-    item.style.backgroundColor = `#B5A642`;
-
-    item.style.transform = `
-        translate3d(
-            ${x_item}px, 
-            ${y_item}px, 
-            ${z_item}px
-        ) 
-        rotateX(${dx_position_item}deg) 
-        rotateY(${dy_position_item}deg)
-    `
-    
-    world.appendChild(item);
-    let item_data = []
-    item_data.push(x_item)
-    item_data.push(y_item)
-    item_data.push(dx_position_item)
-    item_data.push(dy_position_item)
-    return [
-        item , 
-        item_data
-    ]
+  return { item, data };
 }
 
-function is_hidden(obj){
-  // pirmaLode = aktuelle Kugel / Projektil
-  // obj[i] = Objekt im Raum 
-  let pirmaLode = myBulletData[
-    myBulletData.length - 1
-  ]
-  for (let i = 0; i < obj.length; i++) {
-    // console.log(pirmaLode)
-    // let r = (lode_x - obj[i][0]) ** 2 + (lode_y - obj[i][1]) ** 2 + (lode_z - obj[i][2]) ** 2;
-    let r = (pirmaLode.x - obj[i][0]) ** 2 + (pirmaLode.y - obj[i][1]) ** 2 + (pirmaLode.z - obj[i][2]) ** 2;
-    console.log("r", (obj))
-    console.log("r", (obj[i][6]) ** 2)
-    console.log("r", (obj[i][7]) ** 2)
-    console.log("r", r < (obj[i][6]) ** 2 + (obj[i][7]) ** 2)
-    if (r < (obj[i][6]) ** 2 + (obj[i][7]) ** 2) {
-      panemsanasSkana.play();
-      // punkti++;
-      // myH1.textContent = `Punkti: ${punkti} no ${obj.length}`;
-      // if (punkti == obj.length) {
-      //   var myH2 = document.createElement("h1");
-      //   myH2.textContent = "Punkti sakrāti, var doties uz teleportu!"
-      //   mansTeksts.appendChild(myH2);
-      // }
-      mansTeksts.appendChild(myH1);
-      obj[i][0] = 100000;
-      obj[i][1] = 100000;
-      obj[i][2] = 100000;
-      lode.remove();
-      zimetLodi();
+
+function remove_item() {
+  let i = 0
+  // myItemsData[i].style.display = "none";
+  if (myItemsData[i].parentNode) {
+    myItemsData[i].parentNode.removeChild(myItemsData[i]);
+  }
+  myItemsData.splice(i, 1);
+  myItemsData.splice(i, 1);
+  i--;
+}
+function updateItemTransform(i) {
+  const it = myItemsData[i];
+  const el = my_items[i];
+  const size = it.vx; // bei dir Größe
+
+  el.style.transform = `
+    translate3d(${600 + it.x - size/2}px, ${400 + it.y - size/2}px, ${it.z}px)
+    rotateX(${it.rx}deg)
+    rotateY(${it.ry}deg)
+  `;
+}
+
+function showHit(text) {
+  const el = document.getElementById("hitmsg");
+  el.textContent = text;
+  el.style.display = "block";
+  clearTimeout(showHit._t);
+  showHit._t = setTimeout(() => el.style.display = "none", 2000);
+}
+
+function is_hidden_test(itemsData) {
+  const b = myBulletData.at(-1);
+  if (!b) return;
+
+  for (let i = 0; i < itemsData.length; i++) {
+    const it = itemsData[i];
+
+    const dx = b.x - it.x;
+    const dy = b.y - it.y;
+    const dz = b.z - it.z;
+
+    const tunnel = Math.abs(b.vx) / 2;          // optional
+    const r = it.radius + 25 + tunnel;          // itemRadius + bulletRadius + puffer
+
+    if (dx * dx + dy * dy + dz * dz < r * r) {
+      console.log("ITEM GETROFFEN", i);
+      return;
     }
   }
 }
-function remove_item(){
-    let i = 0
-    // myItemsData[i].style.display = "none";
-    if (myItemsData[i].parentNode) {
-        myItemsData[i].parentNode.removeChild(myItemsData[i]);
+function checkHits() {
+  if (!myBulletData.length) return;
+  if (!myItemsData.length) return;
+
+  if (myBulletData.length && myItemsData.length) {
+    const b = myBulletData.at(-1);
+    const it = myItemsData[0];
+    console.log("bullet y:", b.y, "item y:", it.y, "dy:", Math.abs(b.y - it.y));
+  }
+
+  for (let bi = 0; bi < myBulletData.length; bi++) {
+    const b = myBulletData[bi];
+
+    for (let ii = 0; ii < myItemsData.length; ii++) {
+      const it = myItemsData[ii];
+
+      const dx = b.x - it.x;
+      const dz = b.z - it.z;
+      const dy = b.y - it.y;
+
+      const bulletRadius = 25;                 // 50px/2
+      const itemRadius = (it.vx ?? 100) / 2;   // item_size steckt in vx
+      const tunnel = Math.max(Math.abs(b.vx), Math.abs(b.vz)) / 2;
+
+      const r = itemRadius + bulletRadius + tunnel;
+
+      if (dx * dx + dz * dz < r * r) {
+        // if (dx * dx + dy * dy + dz * dz < r * r) {
+          console.log("HIT!", { bullet: bi, item: ii });
+          showHit("Item getroffen!");
+          // Item entfernen (DOM + Data)
+          if (my_items[ii]?.parentNode) my_items[ii].parentNode.removeChild(my_items[ii]);
+          my_items.splice(ii, 1);
+          myItemsData.splice(ii, 1);
+
+          update_points(++counter_points)
+          thing.play()
+          return;
+        }
+      }
     }
-    myItemsData.splice(i, 1);
-    myItemsData.splice(i, 1);
-    i--;
-}
+  }
