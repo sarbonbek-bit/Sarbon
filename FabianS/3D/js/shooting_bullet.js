@@ -3,7 +3,7 @@
 function drawMyBullet(num) {
     let shooting_bullet = document.createElement("div");
     shooting_bullet.id = `shooting_bullet${num}`;
-    // shooting_bullet.id = `lode`;
+
     shooting_bullet.style.display = "block";
     shooting_bullet.style.position = "absolute";
     shooting_bullet.style.width = `50px`;

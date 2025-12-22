@@ -52,7 +52,7 @@ function updateItems(deltaTime) {
     // it.rx = (it.rx + 90 * deltaTime) % 360;
     it.ry = (it.ry + 90 * deltaTime) % 360; 
     it.rz = (it.rz + 90 * deltaTime) % 360;
-    // el.style.transformStyle = "preserve-3d";
+
     el.style.transform = `
       translate3d(${600 + it.x - size / 2}px, ${400 + it.y - size / 2}px, ${it.z}px)
       rotateX(${it.rx}deg)
@@ -99,10 +99,10 @@ function checkHits() {
 
       const r = itemRadius + bulletRadius + tunnel;
 
-      // if (dx * dx + dz * dz < r * r) {
+
       if (dx * dx + dy * dy + dz * dz < r * r) {
         showHit("Item getroffen!");
-        // Item entfernen (DOM + Data)
+
         if (my_items[ii]?.parentNode) my_items[ii].parentNode.removeChild(my_items[ii]);
         my_items.splice(ii, 1);
         myItemsData.splice(ii, 1);

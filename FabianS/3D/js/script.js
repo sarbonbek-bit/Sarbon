@@ -31,10 +31,8 @@ let dz = 0
 
 
 
-// geeignet um ausserhalb der Kontur zu sein und Features zu testen 
 let jump
 jump = true
-// jump = false 
 
 
 let mySquares = []
@@ -47,7 +45,7 @@ let onGround = false;
 
 let pressForward = 0
 let pawn
-// window.pawn = pawn 
+
 
 let pressBack = 0
 let pressRight = 0
@@ -65,9 +63,7 @@ let my_shooting_bullets = []
 let myBulletData = []
 let myBulletsShooting = 0
 
-// 3x3 2d Rotation
 
-// Konstruktor
 
 
 function player(
@@ -104,7 +100,6 @@ document.onclick = function () {
                 pawn.z,
                 pawn.rx,
                 pawn.ry,
-                // pawn.rz, 
                 bulletSpeed,
                 bulletSpeed,
                 bulletSpeed
@@ -120,7 +115,6 @@ function update() {
 
     updateBullets()
 
-    // updateItemTransform()
     updateItems(0.01)
 
     checkHits()
@@ -164,29 +158,6 @@ function update() {
         pawn.ry += dry;
     }
 
-    // document.onclick = function () {
-    //     if (lock) {
-    //         let newBullet = drawMyBullet(myBulletsShooting++)
-    //         my_shooting_bullets.push(newBullet)
-
-    //         myBulletData.push(
-    //             new player(
-    //                 pawn.x,
-    //                 pawn.y,
-    //                 pawn.z,
-    //                 pawn.rx,
-    //                 pawn.ry,
-    //                 bulletSpeed,
-    //                 bulletSpeed,
-    //                 bulletSpeed
-    //             )
-    //         )
-    //         // if (myBulletData.length > 1) {
-
-    //         // }
-    //     }
-
-    // }
     world.style.transform = `
         translateZ(600px) 
         rotateX(${-pawn.rx}deg) 
@@ -215,7 +186,7 @@ pawn = new player(
     0,
     0,
     0,
-    -90,// Rotation um y
+    -90,
     player_speed,
     player_speed,
     player_speed
@@ -297,7 +268,7 @@ function add_items() {
         y: 30,
         z: -900,
         size: 100,
-        rx: 0,   // um X-Achse kippen
+        rx: 0,   
         ry: 90,
         rz: 0
     });
@@ -308,7 +279,7 @@ function add_items() {
         y: 30,
         z: -700,
         size: 100,
-        rx: 0,   // um X-Achse kippen
+        rx: 0,   
         ry: 90,
         rz: 0
     });
@@ -317,7 +288,7 @@ function add_items() {
         y: -140,
         z: -700,
         size: 100,
-        rx: 0,   // um X-Achse kippen
+        rx: 0,   
         ry: 90,
         rz: 0
     });
@@ -326,7 +297,7 @@ function add_items() {
         y: -200,
         z: 900,
         size: 100,
-        rx: 0,   // um X-Achse kippen
+        rx: 0,   
         ry: 90,
         rz: 0
     });
@@ -335,12 +306,11 @@ function add_items() {
         y: 30,
         z: 900,
         size: 100,
-        rx: 0,   // um X-Achse kippen
+        rx: 0,  
         ry: 0,
         rz: 90
     });
-    // spawnItem({ x: 200, y: 200, z: -600, size: 80 });      // in der Luft
-    // spawnItem({ x: -300, y: 500, z: -1200, size: 120 }); 
+
     update_points(counter_points + " / " + myItemsCounter)
 }
 
