@@ -107,7 +107,7 @@ function checkHits() {
         my_items.splice(ii, 1);
         myItemsData.splice(ii, 1);
 
-        update_points(++counter_points + " / " + myItemsCounter)
+        update_points(++counter_points)
         thing.play()
         return;
       }

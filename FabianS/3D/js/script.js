@@ -214,16 +214,16 @@ container.onclick = function () {
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 document.addEventListener("keydown", (event) => {
-    if (event.key == "w") {
+    if (event.key == "w"|| event.key == "ArrowUp") {
         pressForward = pawn.vz;
     }
-    if (event.key == "s") {
+    if (event.key == "s" || event.key == "ArrowDown") {
         pressBack = pawn.vz;
     }
-    if (event.key == "d") {
+    if (event.key == "d" || event.key == "ArrowRight") {
         pressRight = pawn.vx;
     }
-    if (event.key == "a") {
+    if (event.key == "a" || event.key == "ArrowLeft") {
         pressLeft = pawn.vx;
     }
     if (event.key == " ") {
@@ -233,16 +233,16 @@ document.addEventListener("keydown", (event) => {
 })
 
 document.addEventListener("keyup", (event) => {
-    if (event.key == "w") {
+    if (event.key == "w" || event.key == "ArrowUp") {
         pressForward = 0;
     }
-    if (event.key == "s") {
+    if (event.key == "s" || event.key == "ArrowDown") {
         pressBack = 0;
     }
-    if (event.key == "d") {
+    if (event.key == "d" || event.key == "ArrowRight") {
         pressRight = 0;
     }
-    if (event.key == "a") {
+    if (event.key == "a" || event.key == "ArrowLeft") {
         pressLeft = 0;
     }
     if (event.key == " ") {
@@ -257,7 +257,7 @@ document.addEventListener("mousemove", (event) => {
 
 
 function update_points(num) {
-    points_anzeige.textContent = `Points: ${num}`
+    points_anzeige.textContent = `Points: ${num} / ${myItemsCounter}` 
 }
 
 
@@ -311,7 +311,7 @@ function add_items() {
         rz: 90
     });
 
-    update_points(counter_points + " / " + myItemsCounter)
+    update_points(counter_points)
 }
 
 
