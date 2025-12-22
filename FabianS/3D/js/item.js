@@ -8,11 +8,14 @@ function spawnItem({ x, y, z, size = 100, rx = 0, ry = 0, rz = 0 }) {
   item.style.width = `${size}px`;
   item.style.height = `${size}px`;
   item.style.borderRadius = "10%";
-  item.style.backgroundColor = "#B5A642";
-  item.style.backgroundColor = "#B5A642";
 
-  //  myBulletsData[i].ry += 45; (SPIN)
-  // Anzeige (DOM braucht bei dir +600/+400 Offset)
+  item.style.backgroundImage = surface_items;
+  item.style.backgroundRepeat = "no-repeat";
+  item.style.backgroundSize = "contain";
+  item.style.backgroundColor = "transparent";
+  item.style.backgroundPosition = "center";
+  item.style.transformOrigin = "50% 50% 50%";
+  // item.style.transformStyle = "preserve-3d";
   item.style.transform = `
     translate3d(${600 + x - size / 2}px, ${400 + y - size / 2}px, ${z}px)
     rotateX(${rx}deg)
@@ -22,8 +25,7 @@ function spawnItem({ x, y, z, size = 100, rx = 0, ry = 0, rz = 0 }) {
 
   world.appendChild(item);
 
-  // DATA: world coords (ohne 600/400), size steckt bei dir in vx
-  const data = new player(x, y, z, rx, ry, size, size, size);
+  const data = new item_data(x, y, z, rx, ry, rz, size, size, size);
 
   my_items.push(item);
   myItemsData.push(data);
@@ -32,54 +34,32 @@ function spawnItem({ x, y, z, size = 100, rx = 0, ry = 0, rz = 0 }) {
 }
 
 
-function remove_item() {
-  let i = 0
-  // myItemsData[i].style.display = "none";
-  if (myItemsData[i].parentNode) {
-    myItemsData[i].parentNode.removeChild(myItemsData[i]);
-  }
+
+function remove_item(i) {
+  if (my_items[i]?.parentNode) my_items[i].parentNode.removeChild(my_items[i]);
+  my_items.splice(i, 1);
   myItemsData.splice(i, 1);
-  myItemsData.splice(i, 1);
-  i--;
 }
 
-function update_item() {
-  for (let c = 0; c < my_items.length; c++) {
-
-    const it = my_items[c];          // DATA
-    // updateItemTransform(it)
-    it.ry = (it.ry ?? 0) + 2;
 
 
-    const el = document.getElementById(`item_number${c}`); // DOM
-    if (!el) {
-      continue;
-    }
-
+function updateItems(deltaTime) {
+  for (let c = 0; c < myItemsData.length; c++) {
+    const it = myItemsData[c];
+    const el = my_items[c];
+    const size = it.vx;
+    //(SPIN)
+    // it.rx = (it.rx + 90 * deltaTime) % 360;
+    it.ry = (it.ry + 90 * deltaTime) % 360; 
+    it.rz = (it.rz + 90 * deltaTime) % 360;
+    // el.style.transformStyle = "preserve-3d";
     el.style.transform = `
-      translate3d(
-        ${600 + it.x - 25}px, 
-        ${400 + it.y - 25}px, 
-        ${it.z}px
-      )
+      translate3d(${600 + it.x - size / 2}px, ${400 + it.y - size / 2}px, ${it.z}px)
       rotateX(${it.rx}deg)
-      rotateY(${-it.ry}deg)
+      rotateY(${it.ry}deg)
+      rotateZ(${it.rz}deg)
     `;
   }
-}
-
-
-
-function updateItemTransform(i) {
-  const it = myItemsData[i];
-  const el = my_items[i];
-  const size = it.vx; // bei dir Größe
-
-  el.style.transform = `
-    translate3d(${600 + it.x - size / 2}px, ${400 + it.y - size / 2}px, ${it.z}px)
-    rotateX(${it.rx}deg)
-    rotateY(${it.ry}deg)
-  `;
 }
 
 function showHit(text) {
@@ -87,7 +67,10 @@ function showHit(text) {
   el.textContent = text;
   el.style.display = "block";
   clearTimeout(showHit._t);
-  showHit._t = setTimeout(() => el.style.display = "none", 2000);
+  showHit._t = setTimeout(
+    () => el.style.display = "none",
+    2000
+  );
 }
 
 
@@ -110,21 +93,21 @@ function checkHits() {
       const dz = b.z - it.z;
       const dy = b.y - it.y;
 
-      const bulletRadius = 25;                 // 50px/2
-      const itemRadius = (it.vx ?? 100) / 2;   // item_size steckt in vx
+      const bulletRadius = 25;
+      const itemRadius = (it.vx ?? 100) / 2;
       const tunnel = Math.max(Math.abs(b.vx), Math.abs(b.vz)) / 2;
 
       const r = itemRadius + bulletRadius + tunnel;
 
-      if (dx * dx + dz * dz < r * r) {
-        // if (dx * dx + dy * dy + dz * dz < r * r) {
+      // if (dx * dx + dz * dz < r * r) {
+      if (dx * dx + dy * dy + dz * dz < r * r) {
         showHit("Item getroffen!");
         // Item entfernen (DOM + Data)
         if (my_items[ii]?.parentNode) my_items[ii].parentNode.removeChild(my_items[ii]);
         my_items.splice(ii, 1);
         myItemsData.splice(ii, 1);
 
-        update_points(++counter_points)
+        update_points(++counter_points + " / " + myItemsCounter)
         thing.play()
         return;
       }

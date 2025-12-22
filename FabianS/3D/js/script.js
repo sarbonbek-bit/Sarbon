@@ -5,6 +5,7 @@
 // https://www.fr.de/panorama/geschichte-vom-louvre-passwort-bis-zu-den-atom-codes-die-schlimmsten-security-fails-der-94028611.html
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 const DEG = Math.PI / 180;
+
 let dzb
 let dxb
 let container = document.getElementById("container")
@@ -17,7 +18,7 @@ let dx_anzeige = document.getElementById("dx")
 let dz_anzeige = document.getElementById("dz")
 
 let counter_points = 0
-update_points(counter_points)
+
 let lastHitId = null;
 
 
@@ -28,12 +29,7 @@ let dx = 0;
 let dy = 0;
 let dz = 0
 
-let mouseSensitivity = 0.3
-let gravity = 0.2
-let gravity_bullet = 0.0
-let player_speed = 5
-let bulletSpeed = 13;
-let move = 0.01;
+
 
 // geeignet um ausserhalb der Kontur zu sein und Features zu testen 
 let jump
@@ -64,12 +60,16 @@ let my_items = []
 let myItemsData = []
 let myItemsCounter = 0
 
+
 let my_shooting_bullets = []
 let myBulletData = []
 let myBulletsShooting = 0
+
 // 3x3 2d Rotation
 
 // Konstruktor
+
+
 function player(
     x,
     y,
@@ -90,10 +90,12 @@ function player(
     this.vz = vz;
     this.onGround = false
 }
+
 document.onclick = function () {
     if (lock) {
         let newBullet = drawMyBullet(myBulletsShooting++)
         my_shooting_bullets.push(newBullet)
+
 
         myBulletData.push(
             new player(
@@ -102,14 +104,14 @@ document.onclick = function () {
                 pawn.z,
                 pawn.rx,
                 pawn.ry,
+                // pawn.rz, 
                 bulletSpeed,
                 bulletSpeed,
                 bulletSpeed
             )
         )
-        // if (myBulletData.length > 1) {
 
-        // }
+
     }
 
 }
@@ -117,7 +119,10 @@ document.onclick = function () {
 function update() {
 
     updateBullets()
-    // update_item()
+
+    // updateItemTransform()
+    updateItems(0.01)
+
     checkHits()
     dz = +(pressRight - pressLeft) * Math.sin(pawn.ry * DEG) - (pressForward - pressBack) * Math.cos(pawn.ry * DEG)
     dx = +(pressRight - pressLeft) * Math.cos(pawn.ry * DEG) + (pressForward - pressBack) * Math.sin(pawn.ry * DEG)
@@ -193,7 +198,6 @@ function update() {
         )
     `;
 
-
 }
 
 
@@ -202,6 +206,9 @@ let game = setInterval(
     update,
     10
 );
+
+
+
 
 pawn = new player(
     0,
@@ -213,6 +220,7 @@ pawn = new player(
     player_speed,
     player_speed
 );
+
 
 
 document.addEventListener("pointerlockchange", (event) => {
@@ -283,57 +291,57 @@ function update_points(num) {
 
 
 function add_items() {
-    
+
     spawnItem({
-        x: 0, 
+        x: 0,
         y: 30,
         z: -900,
         size: 100,
         rx: 0,   // um X-Achse kippen
         ry: 90,
         rz: 0
-    }); 
-    
-    
+    });
+
+
     spawnItem({
-        x: 300, 
+        x: 300,
         y: 30,
         z: -700,
         size: 100,
         rx: 0,   // um X-Achse kippen
         ry: 90,
         rz: 0
-    });     
+    });
     spawnItem({
-        x: -300, 
+        x: -300,
         y: -140,
         z: -700,
         size: 100,
         rx: 0,   // um X-Achse kippen
         ry: 90,
         rz: 0
-    });     
+    });
     spawnItem({
-        x: -300, 
+        x: -300,
         y: -200,
         z: 900,
         size: 100,
         rx: 0,   // um X-Achse kippen
         ry: 90,
         rz: 0
-    });     
+    });
     spawnItem({
-        x: 700, 
+        x: 700,
         y: 30,
         z: 900,
         size: 100,
         rx: 0,   // um X-Achse kippen
         ry: 0,
         rz: 90
-    });     
+    });
     // spawnItem({ x: 200, y: 200, z: -600, size: 80 });      // in der Luft
     // spawnItem({ x: -300, y: 500, z: -1200, size: 120 }); 
-
+    update_points(counter_points + " / " + myItemsCounter)
 }
 
 
