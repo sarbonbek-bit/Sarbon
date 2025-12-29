@@ -684,6 +684,19 @@ function tunnel() {
                 1,
                 // floor
             ],
+            [
+                -800 + faktor_x * x_abstand,
+                -100 - faktor_y * y_abstand,
+                - width_room / 2 + 350 + faktor_z * z_abstand,
+                0,
+                90,
+                0,
+                300,
+                60,
+                "rgba(251, 251, 251, 1)",
+                1,
+                floor
+            ],
 
 
             // [
