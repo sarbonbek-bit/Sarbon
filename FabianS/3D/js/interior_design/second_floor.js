@@ -3,8 +3,6 @@ function second_floor_front_and_behind() {
     let beleuchtung = structures[11]
     let height_second_floor_side_one = 200
     let width_second_floor_side_one = width_room - width_stair - 198
-    let height_second_floor_side_two = 200
-    let width_second_floor_side_two = 200
     let abstaende = [
         {
             x: 0,
@@ -697,47 +695,6 @@ function tunnel() {
                 1,
                 floor
             ],
-
-
-            // [
-            //     50 + faktor_x * x_abstand,
-            //     -50 - faktor_y * y_abstand,
-            //     - width_room / 2 + 750 + faktor_z * z_abstand,
-            //     90,
-            //     0,
-            //     0,
-            //     100,
-            //     500,
-            //     "rgba(0,0,160,1)",
-            //     1,
-            //     // floor
-            // ],
-            // [
-            //     0 + faktor_x * x_abstand,
-            //     25 - faktor_y * y_abstand,
-            //     - width_room / 2 + 750 + faktor_z * z_abstand,
-            //     90,
-            //     90,
-            //     0,
-            //     150,
-            //     500,
-            //     "rgba(0,0,160,1)",
-            //     1,
-            //     // floor
-            // ],
-            // [
-            //     100 + faktor_x * x_abstand,
-            //     25 - faktor_y * y_abstand,
-            //     - width_room / 2 + 750 + faktor_z * z_abstand,
-            //     90,
-            //     90,
-            //     0,
-            //     150,
-            //     500,
-            //     "rgba(0,0,160,1)",
-            //     1,
-            //     // floor
-            // ],
         ]
         allSteps.push(...step);
     }
