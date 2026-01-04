@@ -23,26 +23,26 @@ function drawTransport() {
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
-        // transform: `
-        //     perspective(800px)
-        //     translate3d(
-        //     ${600}px,
-        //     ${200}px,
-        //     ${200}px
-        //     )
-        //     rotateX(${0}deg)
-        //     rotateY(${0}deg)
-        // `
         transform: `
             perspective(800px)
             translate3d(
             ${600}px,
-            ${600}px,
-            ${-1800}px
+            ${200}px,
+            ${200}px
             )
             rotateX(${0}deg)
             rotateY(${0}deg)
         `
+        // transform: `
+        //     perspective(800px)
+        //     translate3d(
+        //     ${600}px,
+        //     ${600}px,
+        //     ${-1800}px
+        //     )
+        //     rotateX(${0}deg)
+        //     rotateY(${0}deg)
+        // `
     });
 
     world.appendChild(transport_box);
