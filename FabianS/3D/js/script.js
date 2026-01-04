@@ -120,7 +120,7 @@ function update() {
     updateItems(0.01)
 
     // update_transportbox()
-
+    checkPawnItemHits()
     checkHits()
     dz = +(pressRight - pressLeft) * Math.sin(pawn.ry * DEG) - (pressForward - pressBack) * Math.cos(pawn.ry * DEG)
     dx = +(pressRight - pressLeft) * Math.cos(pawn.ry * DEG) + (pressForward - pressBack) * Math.sin(pawn.ry * DEG)

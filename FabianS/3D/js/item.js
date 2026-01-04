@@ -73,7 +73,33 @@ function showHit(text) {
   );
 }
 
+function checkPawnItemHits() {
+  if (!myItemsData.length) return;
 
+  // Pawn world coords (anpassen!)
+  const px = (pawn.x ?? 0);
+  const py = (pawn.y ?? 0);
+  const pz = (pawn.z ?? 0);
+  const pawnRadius = 35;
+
+  for (let ii = myItemsData.length - 1; ii >= 0; ii--) {
+    const it = myItemsData[ii];
+    const itemRadius = (it.vx ?? 100) / 2;
+
+    const dx = px - it.x;
+    const dy = py - it.y;
+    const dz = pz - it.z;
+
+    const r = pawnRadius + itemRadius;
+    if (dx*dx + dy*dy + dz*dz < r*r) {
+      showHit("Item eingesammelt!");
+      remove_item(ii);
+      update_points(++counter_points);
+      thing.play();
+      return;
+    }
+  }
+}
 function checkHits() {
   if (!myBulletData.length) return;
   if (!myItemsData.length) return;
