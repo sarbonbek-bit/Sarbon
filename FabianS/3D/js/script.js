@@ -39,7 +39,9 @@ let mySquares = []
 let mouseX = 0
 let mouseY = 0;
 
-
+let transportBox = []
+let transportBoxData = []
+let id_transportbox = "transport_box_1"
 
 let onGround = false;
 
@@ -116,6 +118,8 @@ function update() {
     updateBullets()
 
     updateItems(0.01)
+
+    // update_transportbox()
 
     checkHits()
     dz = +(pressRight - pressLeft) * Math.sin(pawn.ry * DEG) - (pressForward - pressBack) * Math.cos(pawn.ry * DEG)
@@ -259,7 +263,9 @@ document.addEventListener("mousemove", (event) => {
 function update_points(num) {
     points_anzeige.textContent = `Points: ${num} / ${myItemsCounter}` 
 }
-
+function getAllItemsRemoved(){
+    return myItemsCounter == counter_points
+}
 
 function add_items() {
 

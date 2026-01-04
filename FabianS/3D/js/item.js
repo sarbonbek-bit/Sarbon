@@ -50,7 +50,7 @@ function updateItems(deltaTime) {
     const size = it.vx;
     //(SPIN)
     // it.rx = (it.rx + 90 * deltaTime) % 360;
-    it.ry = (it.ry + 90 * deltaTime) % 360; 
+    it.ry = (it.ry + 90 * deltaTime) % 360;
     it.rz = (it.rz + 90 * deltaTime) % 360;
 
     el.style.transform = `
@@ -103,12 +103,29 @@ function checkHits() {
       if (dx * dx + dy * dy + dz * dz < r * r) {
         showHit("Item getroffen!");
 
+
         if (my_items[ii]?.parentNode) my_items[ii].parentNode.removeChild(my_items[ii]);
         my_items.splice(ii, 1);
         myItemsData.splice(ii, 1);
 
         update_points(++counter_points)
         thing.play()
+
+        if(getAllItemsRemoved()){
+          let box = drawTransport()
+          myBulletData.push(
+            new player(
+              600,
+              470,
+              pawn.z,
+              pawn.rx,
+              pawn.ry,
+              bulletSpeed,
+              bulletSpeed,
+              bulletSpeed
+            )
+          )
+        }
         return;
       }
     }
