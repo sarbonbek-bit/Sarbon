@@ -122,6 +122,7 @@ function update() {
     // update_transportbox()
     checkPawnItemHits()
     checkHits()
+    checkTransport()
     dz = +(pressRight - pressLeft) * Math.sin(pawn.ry * DEG) - (pressForward - pressBack) * Math.cos(pawn.ry * DEG)
     dx = +(pressRight - pressLeft) * Math.cos(pawn.ry * DEG) + (pressForward - pressBack) * Math.sin(pawn.ry * DEG)
     dy += gravity;

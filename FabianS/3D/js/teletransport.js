@@ -69,3 +69,33 @@ function update_transportbox() {
         `;
     }
 }
+
+function checkTransport() {
+
+    if (!transportBoxData.length) {
+        return;
+    }
+
+
+    // Pawn world coords (anpassen!)
+    const px = (pawn.x );
+    const py = (pawn.y );
+    const pz = (pawn.z );
+    const pawnRadius = 35;
+    
+    for (let c = 0; c < transportBoxData.length; c++) {
+        const it = transportBoxData[c];
+        const itemRadius = 670 / 2;
+
+        const dx = px - it.x;
+        const dy = py - it.y;
+        const dz = pz - it.z;
+
+        const r = pawnRadius + itemRadius;
+
+        if (dx * dx + dy * dy + dz * dz < r * r) {
+            showHit("Ready for Level 2");
+            return;
+        }
+    }
+}

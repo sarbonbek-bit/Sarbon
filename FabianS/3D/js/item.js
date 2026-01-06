@@ -139,11 +139,12 @@ function checkHits() {
 
         if(getAllItemsRemoved()){
           let box = drawTransport()
-          myBulletData.push(
+          transportBox.push(box)
+          transportBoxData.push(
             new player(
               600,
-              470,
-              pawn.z,
+              200,
+              200,
               pawn.rx,
               pawn.ry,
               bulletSpeed,
