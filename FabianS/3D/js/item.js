@@ -91,11 +91,13 @@ function checkPawnItemHits() {
     const dz = pz - it.z;
 
     const r = pawnRadius + itemRadius;
-    if (dx*dx + dy*dy + dz*dz < r*r) {
-      showHit("Item eingesammelt!");
+    if (dx * dx + dy * dy + dz * dz < r * r) {
+      showHit("Item collected!");
       remove_item(ii);
       update_points(++counter_points);
       thing.play();
+
+      create_transport_main()
       return;
     }
   }
@@ -127,7 +129,7 @@ function checkHits() {
 
 
       if (dx * dx + dy * dy + dz * dz < r * r) {
-        showHit("Item getroffen!");
+        showHit("Item hit!");
 
 
         if (my_items[ii]?.parentNode) my_items[ii].parentNode.removeChild(my_items[ii]);
@@ -137,24 +139,29 @@ function checkHits() {
         update_points(++counter_points)
         thing.play()
 
-        if(getAllItemsRemoved()){
-          let box = drawTransport()
-          transportBox.push(box)
-          transportBoxData.push(
-            new player(
-              600,
-              200,
-              200,
-              pawn.rx,
-              pawn.ry,
-              bulletSpeed,
-              bulletSpeed,
-              bulletSpeed
-            )
-          )
-        }
+        create_transport_main()
         return;
       }
     }
+  }
+}
+
+
+function create_transport_main() {
+  if (getAllItemsRemoved()) {
+    let box = drawTransport()
+    transportBox.push(box)
+    transportBoxData.push(
+      new player(
+        600,
+        200,
+        200,
+        pawn.rx,
+        pawn.ry,
+        bulletSpeed,
+        bulletSpeed,
+        bulletSpeed
+      )
+    )
   }
 }

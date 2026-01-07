@@ -122,6 +122,7 @@ function update() {
     // update_transportbox()
     checkPawnItemHits()
     checkHits()
+
     checkTransport()
     dz = +(pressRight - pressLeft) * Math.sin(pawn.ry * DEG) - (pressForward - pressBack) * Math.cos(pawn.ry * DEG)
     dx = +(pressRight - pressLeft) * Math.cos(pawn.ry * DEG) + (pressForward - pressBack) * Math.sin(pawn.ry * DEG)
@@ -219,7 +220,7 @@ container.onclick = function () {
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 document.addEventListener("keydown", (event) => {
-    if (event.key == "w"|| event.key == "ArrowUp") {
+    if (event.key == "w" || event.key == "ArrowUp") {
         pressForward = pawn.vz;
     }
     if (event.key == "s" || event.key == "ArrowDown") {
@@ -262,9 +263,9 @@ document.addEventListener("mousemove", (event) => {
 
 
 function update_points(num) {
-    points_anzeige.textContent = `Points: ${num} / ${myItemsCounter}` 
+    points_anzeige.textContent = `Points: ${num} / ${myItemsCounter}`
 }
-function getAllItemsRemoved(){
+function getAllItemsRemoved() {
     return myItemsCounter == counter_points
 }
 
@@ -275,7 +276,7 @@ function add_items() {
         y: 30,
         z: -900,
         size: 100,
-        rx: 0,   
+        rx: 0,
         ry: 90,
         rz: 0
     });
@@ -286,7 +287,7 @@ function add_items() {
         y: 30,
         z: -700,
         size: 100,
-        rx: 0,   
+        rx: 0,
         ry: 90,
         rz: 0
     });
@@ -295,7 +296,7 @@ function add_items() {
         y: -140,
         z: -700,
         size: 100,
-        rx: 0,   
+        rx: 0,
         ry: 90,
         rz: 0
     });
@@ -304,7 +305,7 @@ function add_items() {
         y: -200,
         z: 900,
         size: 100,
-        rx: 0,   
+        rx: 0,
         ry: 90,
         rz: 0
     });
@@ -313,7 +314,7 @@ function add_items() {
         y: 30,
         z: 900,
         size: 100,
-        rx: 0,  
+        rx: 0,
         ry: 0,
         rz: 90
     });
