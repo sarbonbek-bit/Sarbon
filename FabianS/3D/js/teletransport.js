@@ -81,7 +81,7 @@ function checkTransport() {
     const px = (pawn.x );
     const py = (pawn.y );
     const pz = (pawn.z );
-    const pawnRadius = 35;
+    const pawnRadius = 50;
     
     for (let c = 0; c < transportBoxData.length; c++) {
         const it = transportBoxData[c];
