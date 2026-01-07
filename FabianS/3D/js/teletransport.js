@@ -1,7 +1,5 @@
 
-function updateTransportBox() {
 
-}
 function drawTransport() {
     let transport_box = document.createElement("div");
     transport_box.id = id_transportbox
