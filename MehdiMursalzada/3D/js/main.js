@@ -113,6 +113,7 @@ document.addEventListener("mousemove", (event) => {
 function update() {
 
     // === ДВИЖЕНИЕ ИГРОКА ===
+    
     dz =
         (pressRight - pressLeft) * Math.sin(pawn.ry * DEG) -
         (pressForward - pressBack) * Math.cos(pawn.ry * DEG);
@@ -132,14 +133,17 @@ function update() {
     }
 
     // === КОЛЛИЗИИ ===
+   
     collision(myRoom, pawn);
 
     // === ПЕРЕМЕЩЕНИЕ ИГРОКА ===
+   
     pawn.x += dx;
     pawn.y += dy;
     pawn.z += dz;
 
     // === ВРАЩЕНИЕ КАМЕРЫ ===
+    
     if (lock) {
         pawn.rx += mouseY * mouseSensitivity;
         pawn.ry += mouseX * mouseSensitivity;
@@ -150,6 +154,7 @@ function update() {
     mouseX = mouseY = 0;
 
     // === ПУЛИ ===
+    
     for (let i = 0; i < myBullets.length; i++) {
 
     let speed = 12;
@@ -170,9 +175,11 @@ function update() {
 }
 
     // === ПРОВЕРКА ПОПАДАНИЙ ===
+
     checkBulletHits();
 
     // === КАМЕРА ===
+    
     world.style.transform =
         `translateZ(600px)
          rotateX(${-pawn.rx}deg)
@@ -305,17 +312,21 @@ function checkBulletHits() {
 
             if (dist < targetsData[t].size / 2) {
                 // 💥 HIT
+                
 
                 // удалить мишень
+                
                 targetsData[t].alive = false;
                 targets[t].remove();
 
                 // удалить пулю
+                
                 myBullets[b].remove();
                 myBullets.splice(b, 1);
                 myBulletsData.splice(b, 1);
 
                 return; // ⬅ КРИТИЧЕСКИ ВАЖНО
+                return; 
             }
         }
     }
