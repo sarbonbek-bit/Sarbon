@@ -30,15 +30,24 @@ drawMyWorld(myRoom, "wall");
 // drawMyWorld(squares, "MMM");
 
 let drx = 0;
+let dry = 0;
 
 document.addEventListener("keydown", (event) => {
   if (event.key == "ArrowUp") {
     drx++;
-    world.style.transform = `rotateX(${drx}deg)`;
+    world.style.transform = `rotateX(${drx}deg) rotateY(${dry}deg)`;
   }
   if (event.key == "ArrowDown") {
     drx--;
-    world.style.transform = `rotateX(${drx}deg)`;
+    world.style.transform = `rotateX(${drx}deg) rotateY(${dry}deg)`;
+  }
+  if (event.key == "ArrowLeft") {
+    dry--;
+    world.style.transform = `rotateX(${drx}deg) rotateY(${dry}deg)`;
+  }
+  if (event.key == "ArrowRight") {
+    dry++;
+    world.style.transform = `rotateX(${drx}deg) rotateY(${dry}deg)`;
   }
 });
 
