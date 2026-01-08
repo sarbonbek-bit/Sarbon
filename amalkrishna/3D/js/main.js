@@ -20,15 +20,15 @@ let mouseX = 0, mouseY = 0;
 
 document.addEventListener("keydown", e => {
     let key = e.key.toLowerCase();
-    if (key === "w") pressForward = 1; 
-    if (key === "s") pressBack = 1;
+    if (key === "s") pressForward = 1; 
+    if (key === "w") pressBack = 1;
     if (key === "a") pressLeft = 1; 
     if (key === "d") pressRight = 1;
 });
 document.addEventListener("keyup", e => {
     let key = e.key.toLowerCase();
-    if (key === "w") pressForward = 0; 
-    if (key === "s") pressBack = 0;
+    if (key === "s") pressForward = 0; 
+    if (key === "w") pressBack = 0;
     if (key === "a") pressLeft = 0; 
     if (key === "d") pressRight = 0;
 });
