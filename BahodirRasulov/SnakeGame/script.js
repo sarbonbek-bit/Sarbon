@@ -1,8 +1,8 @@
-const canvas = document.getElementById("game"); //refering to the canvas element in html file
-const ctx = canvas.getContext("2d"); //enables us to use some tools for drawing such like fillRect, drawImage etc. 
+const canvas = document.getElementById("game"); 
+const ctx = canvas.getContext("2d"); 
 
-let myPlayground = new Image(); // create an empty Image object
-myPlayground.src = "img/ground.png"; // we set the property src equal to the path to the file we want to diplay 
+let myPlayground = new Image();
+myPlayground.src = "img/ground.png"; 
 let myCarrot = new Image();
 myCarrot.src = "img/carrot.png";
 
@@ -40,7 +40,7 @@ document.addEventListener("keypress", (event) =>{
 })
 
 
-function drawGame(){ // the function for drawing the game
+function drawGame(){ 
     ctx.drawImage(myPlayground, 0, 0);
     ctx.drawImage(myCarrot, food_coords.x, food_coords.y);
     ctx.fillStyle = "white";
@@ -75,10 +75,7 @@ function drawGame(){ // the function for drawing the game
         clearInterval(myGame);
     }
 
-    // if (snakeX < 0) {
-    //     snakeX = 17*box;
-    // }
-   
+
 
     let newHead = {
         x: snakeX,
@@ -89,4 +86,4 @@ function drawGame(){ // the function for drawing the game
 
 }
 
-let myGame = setInterval(drawGame, 100) // we create a refresh of the scene each 100 ms, each 100 ms the funciton drawGame will be used
+let myGame = setInterval(drawGame, 100) 
