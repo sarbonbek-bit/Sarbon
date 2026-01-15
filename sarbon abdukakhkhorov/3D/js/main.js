@@ -1,257 +1,514 @@
-const DEG = Math.PI / 180;
-var world = document.getElementById("world");
-var container = document.getElementById("container");
+import * as THREE from 'three';
+import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
 
-//
-var lock = false;
-document.addEventListener("pointerlockchange", (event) => {
-    lock = !lock;
-})
-container.onclick = function () {
-    if (!lock) container.requestPointerLock();
-}
-//
+// --- Configuration ---
+const UNIT_SIZE = 20;
+const WALL_HEIGHT = 15;
 
-function player(x, y, z, rx, ry, vx, vy, vz) {
-    this.x = x;
-    this.y = y;
-    this.z = z;
-    this.rx = rx;
-    this.ry = ry;
-    this.vx = vx;
-    this.vy = vy;
-    this.vz = vz;
-    this.onGround = false;
-}
+// --- Advanced Procedural Asset Generation ---
+function createTexture(type) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1024; // Higher resolution
+    canvas.height = 1024;
+    const ctx = canvas.getContext('2d');
 
-var pawn = new player(0, 0, 0, 0, 0, 7, 7, 7);
-var myBullets = [];
-var myBulletsData = [];
-var myBulletNumber = 0;
+    // Helper: Add Noise
+    function addNoise(amount = 0.1) {
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        for (let i = 0; i < data.length; i += 4) {
+            const val = (Math.random() - 0.5) * amount * 255;
+            data[i] += val;
+            data[i + 1] += val;
+            data[i + 2] += val;
+        }
+        ctx.putImageData(imageData, 0, 0);
+    }
 
-let myRoom = [
-    [0, 100, 0, 90, 0, 0, 2000, 2000, "brown", 1, "url('textures/floor_01.jpg')"],
-    [0, 70, 0, 90, 0, 0, 200, 200, "yellow", 1, "url('textures/sandy_wall.jpg')"],
-    [0, -100, -1000, 0, 0, 0, 2000, 400, "brown", 1, "url('textures/sandy_wall.jpg')"],
-    [0, 87.5, -100, 0, 0, 0, 200, 35, "yellow", 1, "url('textures/sandy_wall.jpg')"],
-    [0, 87.5, 100, 0, 0, 0, 200, 35, "yellow", 1, "url('textures/sandy_wall.jpg')"],
-    [100, 87.5, 0, 0, 90, 0, 200, 35, "yellow", 1, "url('textures/sandy_wall.jpg')"],
-    [-100, 87.5, 0, 0, 90, 0, 200, 35, "yellow", 1, "url('textures/sandy_wall.jpg')"],
-];
+    if (type === 'wall') {
+        // High-Tech Cyber Wall
+        // Base
+        const grad = ctx.createLinearGradient(0, 0, 1024, 1024);
+        grad.addColorStop(0, '#1a1f25');
+        grad.addColorStop(0.5, '#252a33');
+        grad.addColorStop(1, '#1a1f25');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 1024, 1024);
 
-drawMyWorld(myRoom, "wall")
+        addNoise(0.05);
 
-var pressForward = pressBack = pressRight = pressLeft = pressUp = 0;
-var mouseX = mouseY = 0;
-var mouseSensitivity = 1;
-var dx = dy = dz = 0;
-var gravity = 0.2;
-var onGround = false;
+        // Hexagon Pattern overlay
+        ctx.strokeStyle = 'rgba(0, 255, 255, 0.05)';
+        ctx.lineWidth = 2;
+        const r = 30;
+        const w = Math.sqrt(3) * r;
+        const h = 2 * r;
+        for (let y = -h; y < 1024 + h; y += h * 0.75) {
+            for (let x = -w; x < 1024 + w; x += w) {
+                const cx = x + ((Math.round(y / (h * 0.75)) % 2) === 0 ? 0 : w / 2);
+                ctx.beginPath();
+                for (let i = 0; i < 6; i++) {
+                    const ang = Math.PI / 3 * i + Math.PI / 6;
+                    ctx.lineTo(cx + Math.cos(ang) * r, y + Math.sin(ang) * r);
+                }
+                ctx.closePath();
+                ctx.stroke();
+            }
+        }
 
-document.addEventListener("keydown", (event) => {
-    if (event.key == "w") {
-        pressForward = pawn.vz;
-    }
-    if (event.key == "s") {
-        pressBack = pawn.vz;
-    }
-    if (event.key == "d") {
-        pressRight = pawn.vx;
-    }
-    if (event.key == "a") {
-        pressLeft = pawn.vx;
-    }
-    if (event.key == " ") {
-        pressUp = pawn.vy;
-    }
-})
-document.addEventListener("keyup", (event) => {
-    if (event.key == "w") {
-        pressForward = 0;
-    }
-    if (event.key == "s") {
-        pressBack = 0;
-    }
-    if (event.key == "d") {
-        pressRight = 0;
-    }
-    if (event.key == "a") {
-        pressLeft = 0;
-    }
-    if (event.key == " ") {
-        pressUp = 0;
-    }
-})
-document.addEventListener("mousemove", (event) => {
-    mouseX = event.movementX;
-    mouseY = event.movementY;
-})
+        // Heavy Industrial Frame
+        ctx.strokeStyle = '#3e4854';
+        ctx.lineWidth = 16;
+        ctx.strokeRect(8, 8, 1008, 1008);
 
-function update() {
-    dz = +(pressRight - pressLeft) * Math.sin(pawn.ry * DEG) - (pressForward - pressBack) * Math.cos(pawn.ry * DEG);
-    dx = +(pressRight - pressLeft) * Math.cos(pawn.ry * DEG) + (pressForward - pressBack) * Math.sin(pawn.ry * DEG);
-    dy += gravity;
+        // Neon Circuits
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = '#00ffff';
+        ctx.strokeStyle = '#00ffff';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(100, 100);
+        ctx.lineTo(100, 300);
+        ctx.lineTo(300, 300);
+        ctx.moveTo(924, 924);
+        ctx.lineTo(924, 724);
+        ctx.lineTo(724, 724);
+        ctx.stroke();
+        ctx.shadowBlur = 0;
 
-    if (onGround) {
-        dy = 0;
-        if (pressUp) {
-            // console.log("jump");
-            dy = -pressUp;
-            onGround = false;
+        // Rivets/Bolts
+        ctx.fillStyle = '#111';
+        const bolt = (bx, by) => {
+            ctx.beginPath();
+            ctx.arc(bx, by, 8, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#555';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        };
+        bolt(40, 40); bolt(984, 40); bolt(40, 984); bolt(984, 984);
+        bolt(512, 40); bolt(512, 984); bolt(40, 512); bolt(984, 512);
+
+    } else if (type === 'floor') {
+        // Anti-slip Sci-Fi Grate
+        ctx.fillStyle = '#0f1012';
+        ctx.fillRect(0, 0, 1024, 1024);
+
+        // Metal plates
+        ctx.fillStyle = '#1c1e22';
+        ctx.fillRect(10, 10, 500, 500);
+        ctx.fillRect(514, 10, 500, 500);
+        ctx.fillRect(10, 514, 500, 500);
+        ctx.fillRect(514, 514, 500, 500);
+
+        addNoise(0.08);
+
+        // Tread pattern
+        ctx.fillStyle = '#2a2e35';
+        for (let i = 0; i < 1024; i += 40) {
+            ctx.fillRect(i, 0, 10, 1024);
+            ctx.fillRect(0, i, 1024, 10);
+        }
+
+        // Caution Stripes
+        ctx.fillStyle = '#d4aa00'; // Dark Yellow
+        for (let i = 0; i < 1024; i += 100) {
+            ctx.beginPath();
+            ctx.moveTo(i, 0);
+            ctx.lineTo(i + 50, 0);
+            ctx.lineTo(0, i + 50);
+            ctx.lineTo(0, i);
+            ctx.fill();
+        }
+        // Alpha blend caution stripes to look worn
+        ctx.fillStyle = 'rgba(0,0,0,0.6)';
+        ctx.fillRect(0, 0, 1024, 1024);
+
+    } else if (type === 'ceiling') {
+        // Deep Space Tech
+        ctx.fillStyle = '#050505';
+        ctx.fillRect(0, 0, 1024, 1024);
+
+        // Grid structure
+        ctx.strokeStyle = '#222';
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        for (let i = 0; i <= 1024; i += 128) {
+            ctx.moveTo(i, 0); ctx.lineTo(i, 1024);
+            ctx.moveTo(0, i); ctx.lineTo(1024, i);
+        }
+        ctx.stroke();
+
+        // Lights
+        for (let i = 0; i < 15; i++) {
+            const x = Math.random() * 1024;
+            const y = Math.random() * 1024;
+            const size = Math.random() * 5 + 2;
+
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = 'white';
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(x, y, size, 0, Math.PI * 2);
+            ctx.fill();
         }
     }
 
-    //   dx = -(pressLeft - pressRight) * Math.cos(pawn.ry * deg) + (pressForward - pressBack) * Math.sin(pawn.ry * deg);
-    //let dz = pressForward - pressBack;
-    // dz = -(pressLeft - pressRight) * Math.sin(pawn.ry * deg) - (pressForward - pressBack) * Math.cos(pawn.ry * deg);
-
-    let drx = mouseY * mouseSensitivity;
-    let dry = mouseX * mouseSensitivity;
-
-    collision(myRoom, pawn);
-
-    mouseX = mouseY = 0;
-
-    pawn.z += dz;
-    pawn.x += dx;
-    pawn.y += dy;
-
-    if (lock) {
-        pawn.rx += drx;
-        if (pawn.rx > 57) {
-            pawn.rx = 57;
-        } else if (pawn.rx < -57) {
-            pawn.rx = -57;
-        }
-        pawn.ry += dry;
-    }
-
-    //shooting option with the mouse
-    document.onclick = function () {
-        if (lock) {
-            myBullets.push(drawMyBullet(myBulletNumber));
-            myBulletsData.push(new player(pawn.x, pawn.y, pawn.z, pawn.rx, pawn.ry, 0, 0, 0));
-            console.log(myBullets);
-            console.log(myBulletsData);
-            console.log(pawn);
-            myBulletNumber++;
-        }
-    }
-
-    // for (let i = 0; i < myBullets.length; i++) {
-    //     myBullets[i].style.transform = `translateZ(600px) rotateX(${-myBulletsData[i].rx}deg) rotateY(${myBulletsData[i].ry}deg) translate3d(${-myBulletsData[i].x}px, ${-myBulletsData[i].y}px, ${-myBulletsData[i].z}px)`;
-    // }
-
-    world.style.transform = `translateZ(600px) rotateX(${-pawn.rx}deg) rotateY(${pawn.ry}deg) translate3d(${-pawn.x}px, ${-pawn.y}px, ${-pawn.z}px)`;
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.wrapS = THREE.RepeatWrapping;
+    tex.wrapT = THREE.RepeatWrapping;
+    tex.anisotropy = renderer ? renderer.capabilities.getMaxAnisotropy() : 16;
+    return tex;
 }
 
-let game = setInterval(update, 10);
+// --- Game Logic ---
+let camera, scene, renderer, controls;
+let moveForward = false;
+let moveBackward = false;
+let moveLeft = false;
+let moveRight = false;
+let raycaster;
 
-function drawMyWorld(squares, name) {
-    for (let i = 0; i < squares.length; i++) {
-        let mySquare1 = document.createElement("div");
-        mySquare1.id = `${name}${i}`;
-        mySquare1.style.position = "absolute";
-        mySquare1.style.width = `${squares[i][6]}px`;
-        mySquare1.style.height = `${squares[i][7]}px`;
-        if (squares[i][10]) {
-            mySquare1.style.backgroundImage = squares[i][10];
-        } else {
-            mySquare1.style.backgroundColor = squares[i][8];
+let coins = [];
+let score = 0;
+const MAX_COINS = 8;
+let gameWon = false;
+let canJump = false; // Jumping state
+
+// 8x8 Maze Map (including borders)
+const mapLayout = [
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+    [1, 0, 1, 0, 1, 0, 1, 1, 0, 1],
+    [1, 0, 1, 0, 0, 0, 0, 1, 0, 1],
+    [1, 0, 1, 1, 1, 1, 0, 1, 0, 1],
+    [1, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+    [1, 1, 1, 1, 0, 1, 1, 1, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+    [1, 0, 1, 1, 1, 1, 0, 0, 0, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+]; // Larger map for longer gameplay
+
+const objects = []; // For collision detection
+
+let prevTime = performance.now();
+const velocity = new THREE.Vector3();
+const direction = new THREE.Vector3();
+
+init();
+animate();
+
+function init() {
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x050510);
+    scene.fog = new THREE.Fog(0x050510, 0, 60);
+
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.y = 5; // Eye height
+
+    // Lights
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.6);
+    hemiLight.position.set(0, 20, 0);
+    scene.add(hemiLight);
+
+    const pointLight = new THREE.PointLight(0x00ffff, 0.8, 100);
+    pointLight.position.set(20, 15, 20);
+    scene.add(pointLight);
+
+    // Renderer
+    renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Controls
+    controls = new PointerLockControls(camera, document.body);
+
+    const instructions = document.getElementById('instructions');
+    instructions.addEventListener('click', function () {
+        controls.lock();
+        initAudio(); // Initialize sound on click
+    });
+
+    controls.addEventListener('lock', function () {
+        instructions.style.display = 'none';
+        document.getElementById('ui').style.display = 'block';
+    });
+
+    controls.addEventListener('unlock', function () {
+        if (!gameWon) instructions.style.display = 'block';
+    });
+
+    scene.add(controls.getObject());
+
+    // Input
+    const onKeyDown = function (event) {
+        switch (event.code) {
+            case 'ArrowUp':
+            case 'KeyW': moveForward = true; break;
+            case 'ArrowLeft':
+            case 'KeyA': moveLeft = true; break;
+            case 'ArrowDown':
+            case 'KeyS': moveBackward = true; break;
+            case 'ArrowRight':
+            case 'KeyD': moveRight = true; break;
+            case 'Space':
+                if (canJump === true) velocity.y += 150; // Jump force
+                canJump = false;
+                break;
         }
-        mySquare1.style.transform = `translate3d(${600 + squares[i][0] - squares[i][6] / 2}px, ${400 + squares[i][1] - squares[i][7] / 2}px, ${squares[i][2]}px) rotateX(${squares[i][3]}deg) rotateY(${squares[i][4]}deg) rotateZ(${squares[i][5]}deg)`;
-        mySquare1.style.opacity = squares[i][9];
-        world.appendChild(mySquare1);
+    };
+
+    const onKeyUp = function (event) {
+        switch (event.code) {
+            case 'ArrowUp':
+            case 'KeyW': moveForward = false; break;
+            case 'ArrowLeft':
+            case 'KeyA': moveLeft = false; break;
+            case 'ArrowDown':
+            case 'KeyS': moveBackward = false; break;
+            case 'ArrowRight':
+            case 'KeyD': moveRight = false; break;
+        }
+    };
+
+    document.addEventListener('keydown', onKeyDown);
+    document.addEventListener('keyup', onKeyUp);
+
+    // Build World
+    raycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, - 1, 0), 0, 10);
+
+    // Textures
+    const wallTex = createTexture('wall');
+    const floorTex = createTexture('floor');
+    const ceilTex = createTexture('ceiling');
+
+    const wallGeo = new THREE.BoxGeometry(UNIT_SIZE, WALL_HEIGHT, UNIT_SIZE);
+    const wallMat = new THREE.MeshPhongMaterial({ map: wallTex });
+
+    // Floor
+    const floorGeo = new THREE.PlaneGeometry(400, 400); // Larger floor
+    const floorMat = new THREE.MeshLambertMaterial({ map: floorTex });
+    floorTex.repeat.set(20, 20);
+    const floor = new THREE.Mesh(floorGeo, floorMat);
+    floor.rotation.x = - Math.PI / 2;
+    scene.add(floor);
+
+    // Ceiling
+    const ceilMat = new THREE.MeshBasicMaterial({ map: ceilTex });
+    ceilTex.repeat.set(20, 20);
+    const ceiling = new THREE.Mesh(floorGeo, ceilMat);
+    ceiling.rotation.x = Math.PI / 2;
+    ceiling.position.y = WALL_HEIGHT;
+    scene.add(ceiling);
+
+    // Maze Construction
+    // mapLayout is 6x6. Offset so (0,0) is center-ish
+    const offset = (mapLayout.length * UNIT_SIZE) / 2;
+
+    for (let z = 0; z < mapLayout.length; z++) {
+        for (let x = 0; x < mapLayout[z].length; x++) {
+            if (mapLayout[z][x] === 1) {
+                const wall = new THREE.Mesh(wallGeo, wallMat);
+                wall.position.x = (x * UNIT_SIZE) - offset;
+                wall.position.y = WALL_HEIGHT / 2;
+                wall.position.z = (z * UNIT_SIZE) - offset;
+                scene.add(wall);
+                objects.push(wall);
+            }
+        }
     }
+
+    // Coins
+    // Manually place 8 coins in open spots
+    const coinLocs = [
+        { x: 1, z: 1 }, // Top Left
+        { x: 8, z: 1 }, // Top Right
+        { x: 1, z: 8 }, // Bottom Left
+        { x: 8, z: 8 }, // Bottom Right
+        { x: 4, z: 3 }, // Mid area
+        { x: 6, z: 5 }, // Open path
+        { x: 1, z: 5 }, // Left path
+        { x: 4, z: 7 }  // Bottom mid
+    ];
+
+    const coinGeo = new THREE.TorusGeometry(1.5, 0.4, 8, 20); // Ring/Coin shape
+    const coinMat = new THREE.MeshStandardMaterial({
+        color: 0xffd700,
+        metalness: 1,
+        roughness: 0.3,
+        emissive: 0xffaa00,
+        emissiveIntensity: 0.2
+    });
+
+    coinLocs.forEach(loc => {
+        const coin = new THREE.Mesh(coinGeo, coinMat);
+        // Calculate world pos
+        const wx = (loc.x * UNIT_SIZE) - offset;
+        const wz = (loc.z * UNIT_SIZE) - offset;
+
+        coin.position.set(wx, 3, wz);
+        scene.add(coin);
+        coins.push(coin);
+
+        // Add a light to the coin
+        const l = new THREE.PointLight(0xffaa00, 1, 10);
+        l.position.set(wx, 3, wz);
+        scene.add(l);
+    });
+
+    // Initial player position (avoid wall)
+    // Start at an open spot
+    controls.getObject().position.set((5 * UNIT_SIZE) - offset, 5, (8 * UNIT_SIZE) - offset);
+
+    window.addEventListener('resize', onWindowResize);
 }
 
-function collision(mapObj, leadObj) {
-    onGround = false;
-    for (let i = 0; i < mapObj.length; i++) {
-        //spēlētāja koordinātes katra taiststūra koordināšu sistēmā
-        let x0 = (leadObj.x - mapObj[i][0]);
-        let y0 = (leadObj.y - mapObj[i][1]);
-        let z0 = (leadObj.z - mapObj[i][2]);
+function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+}
 
-        if ((x0 ** 2 + y0 ** 2 + z0 ** 2 + dx ** 2 + dy ** 2 + dz ** 2) < (mapObj[i][6] ** 2 + mapObj[i][7] ** 2)) {
-            //Pārvietošanās
-            let x1 = x0 + dx;
-            let y1 = y0 + dy;
-            let z1 = z0 + dz;
+function animate() {
+    requestAnimationFrame(animate);
 
-            //Jaunā punkta koodrinātes
-            let point0 = coorTransform(x0, y0, z0, mapObj[i][3], mapObj[i][4], mapObj[i][5]);
-            let point1 = coorTransform(x1, y1, z1, mapObj[i][3], mapObj[i][4], mapObj[i][5]);
-            let normal = coorReTransform(0, 0, 1, mapObj[i][3], mapObj[i][4], mapObj[i][5]);
-            // let point2 = new Array();
+    const time = performance.now();
 
-            if (Math.abs(point1[0]) < (mapObj[i][6] + 70) / 2 && Math.abs(point1[1]) < (mapObj[i][7] + 70) / 2 && Math.abs(point1[2]) < 50) {
-                // console.log("collision!");
-                point1[2] = Math.sign(point0[2]) * 50;
-                let point2 = coorReTransform(point1[0], point1[1], point1[2], mapObj[i][3], mapObj[i][4], mapObj[i][5]);
-                let point3 = coorReTransform(point1[0], point1[1], 0, mapObj[i][3], mapObj[i][4], mapObj[i][5]);
-                dx = point2[0] - x0;
-                dy = point2[1] - y0;
-                dz = point2[2] - z0;
+    if (controls.isLocked === true) {
+        const delta = (time - prevTime) / 1000;
 
-                if (Math.abs(normal[1]) > 0.8) {
-                    if (point3[1] > point2[1]) {
-                        onGround = true;
-                        // console.log("OnGround!");
-                    }
-                } else {
-                    dy = y1 - y0;
+        // Gravity and Friction
+        velocity.x -= velocity.x * 10.0 * delta;
+        velocity.z -= velocity.z * 10.0 * delta;
+        velocity.y -= 9.8 * 40.0 * delta; // 100.0 = mass, simplified to 40.0 for better feel
+
+        // Input Direction
+        direction.z = Number(moveForward) - Number(moveBackward);
+        direction.x = Number(moveRight) - Number(moveLeft);
+        direction.normalize(); // Ensure consistent speed in all directions
+
+        if (moveForward || moveBackward) velocity.z -= direction.z * 400.0 * delta;
+        if (moveLeft || moveRight) velocity.x -= direction.x * 400.0 * delta;
+
+        controls.moveRight(-velocity.x * delta);
+        controls.moveForward(-velocity.z * delta);
+        controls.getObject().position.y += (velocity.y * delta); // New Vertical movement
+
+        const playerPos = controls.getObject().position;
+
+        // Floor Collision
+        if (playerPos.y < 5) {
+            velocity.y = 0;
+            playerPos.y = 5;
+            canJump = true;
+        }
+
+        // Ceiling Collision
+        if (playerPos.y > WALL_HEIGHT - 2) { // 2 is a small offset for player "head"
+            velocity.y = 0;
+            playerPos.y = WALL_HEIGHT - 2;
+        }
+
+        const playerRadius = 2.0;
+
+        for (let obj of objects) {
+            const wallBox = new THREE.Box3().setFromObject(obj);
+            // Check collision only in 2D (XZ plane) for better stability
+            const distance = wallBox.distanceToPoint(playerPos);
+
+            if (distance < playerRadius) {
+                const wallCenter = new THREE.Vector3();
+                obj.getWorldPosition(wallCenter);
+
+                // Calculate push direction only on X and Z axes
+                const dirToPlayer = new THREE.Vector3(
+                    playerPos.x - wallCenter.x,
+                    0, // Ignore Y
+                    playerPos.z - wallCenter.z
+                ).normalize();
+
+                // Move player out horizontally
+                controls.getObject().position.addScaledVector(dirToPlayer, playerRadius - distance + 0.1);
+
+                velocity.x = 0;
+                velocity.z = 0;
+            }
+        }
+
+        // Coin Collection
+        for (let i = coins.length - 1; i >= 0; i--) {
+            const coin = coins[i];
+            coin.rotation.y += 2 * delta; // Spin
+
+            const dist = playerPos.distanceTo(coin.position);
+            if (dist < 4) {
+                // Collect
+                playCollectSound(); // Play Sound
+                scene.remove(coin);
+                coins.splice(i, 1);
+                score++;
+                document.getElementById('score').innerText = score;
+
+                if (score >= MAX_COINS) {
+                    winGame();
                 }
             }
         }
-    };
+    }
+
+    prevTime = time;
+    renderer.render(scene, camera);
 }
 
-function coorTransform(x0, y0, z0, rxc, ryc, rzc) {
-    let x1 = x0;
-    let y1 = y0 * Math.cos(rxc * DEG) + z0 * Math.sin(rxc * DEG);
-    let z1 = -y0 * Math.sin(rxc * DEG) + z0 * Math.cos(rxc * DEG);
-
-    let x2 = x1 * Math.cos(ryc * DEG) - z1 * Math.sin(ryc * DEG);
-    let y2 = y1;
-    let z2 = x1 * Math.sin(ryc * DEG) + z1 * Math.cos(ryc * DEG);
-
-    let x3 = x2 * Math.cos(rzc * DEG) + y2 * Math.sin(rzc * DEG);
-    let y3 = -x2 * Math.sin(rzc * DEG) + y2 * Math.cos(rzc * DEG);
-    let z3 = z2;
-    return [x3, y3, z3];
+// --- Audio ---
+let audioCtx;
+function initAudio() {
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
 }
 
-function coorReTransform(x3, y3, z3, rxc, ryc, rzc) {
-    let x2 = x3 * Math.cos(rzc * DEG) - y3 * Math.sin(rzc * DEG);
-    let y2 = x3 * Math.sin(rzc * DEG) + y3 * Math.cos(rzc * DEG);
-    let z2 = z3;
+function playCollectSound() {
+    if (!audioCtx) return;
 
-    let x1 = x2 * Math.cos(ryc * DEG) + z2 * Math.sin(ryc * DEG);
-    let y1 = y2;
-    let z1 = -x2 * Math.sin(ryc * DEG) + z2 * Math.cos(ryc * DEG);
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
 
-    let x0 = x1;
-    let y0 = y1 * Math.cos(rxc * DEG) - z1 * Math.sin(rxc * DEG);
-    let z0 = y1 * Math.sin(rxc * DEG) + z1 * Math.cos(rxc * DEG);
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.1);
 
-    return [x0, y0, z0];
+    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.3);
 }
 
-//functions related to shooting - START
+function winGame() {
+    gameWon = true;
+    document.getElementById('message').style.display = 'block';
+    controls.unlock();
 
-function drawMyBullet(num) {
-    let myBullet = document.createElement("div");
-    myBullet.id = `bullet_${num}`;
-    myBullet.style.display = "block";
-    myBullet.style.position = "absolute";
-    myBullet.style.width = `50px`;
-    myBullet.style.height = `50px`;
-    myBullet.style.borderRadius = `50%`;
-    myBullet.style.backgroundColor = `red`;
-    myBullet.style.transform = `translate3d(${600+pawn.x-25}px, ${400+pawn.y-25}px, ${pawn.z}px) rotateX(${pawn.rx}deg) rotateY(${-pawn.ry}deg)`
-    world.appendChild(myBullet);
-    return myBullet;
+    // Victory fanfare
+    setTimeout(() => {
+        if (audioCtx) {
+            const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+            notes.forEach((freq, i) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime + i * 0.1);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + i * 0.1 + 0.5);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(audioCtx.currentTime + i * 0.1);
+                osc.stop(audioCtx.currentTime + i * 0.1 + 0.5);
+            });
+        }
+    }, 100);
 }
-
-//functions related to shooting - END
