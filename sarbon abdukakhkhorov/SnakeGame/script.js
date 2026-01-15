@@ -1,92 +1,166 @@
-const canvas = document.getElementById("game"); //refering to the canvas element in html file
-const ctx = canvas.getContext("2d"); //enables us to use some tools for drawing such like fillRect, drawImage etc. 
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
 
-let myPlayground = new Image(); // create an empty Image object
-myPlayground.src = "img/ground.png"; // we set the property src equal to the path to the file we want to diplay 
-let myCarrot = new Image();
-myCarrot.src = "img/carrot.png";
+const scoreBoard = document.getElementById("score-board");
+const highScoreBoard = document.getElementById("high-score-board");
+const overlay = document.getElementById("overlay");
+const overlayTitle = document.getElementById("overlay-title");
+const overlayMsg = document.getElementById("overlay-msg");
+const startBtn = document.getElementById("start-btn");
 
-let box = 32;
-let food_coords = {
-    x: (Math.trunc(17*Math.random())+1)*box,
-    y: (Math.trunc(15*Math.random())+3)*box, 
-    type: "carrot"
-}
-
-let snakeX = 0;
-let snakeY = 0;
-let dir = "";
+const box = 32;
 let score = 0;
+let highScore = localStorage.getItem("snakeHighScore") || 0;
+highScoreBoard.innerText = `HIGH: ${highScore}`;
 
 let snake = [];
-snake[0] = {
-    x: 9*box,
-    y: 10*box
+let food = {};
+let dir = "";
+let gameInterval;
+let gameSpeed = 120;
+
+// Initialize Game
+function init() {
+    snake = [{ x: 9 * box, y: 10 * box }];
+    food = spawnFood();
+    dir = "";
+    score = 0;
+    gameSpeed = 120;
+    scoreBoard.innerText = "SCORE: 0";
+    overlay.classList.add("hidden");
+
+    if (gameInterval) clearInterval(gameInterval);
+    gameInterval = setInterval(draw, gameSpeed);
 }
 
-document.addEventListener("keypress", (event) =>{
-    if(event.key == "w" && dir != "down") {
-        dir = "up";
-    }
-    if(event.key == "s" && dir != "up") {
-        dir = "down";
-    }
-    if(event.key == "a" && dir != "right") {
-        dir = "left";
-    }
-    if(event.key == "d" && dir != "left") {
-        dir = "right";
-    }
-})
+function spawnFood() {
+    return {
+        x: Math.floor(Math.random() * 17 + 1) * box,
+        y: Math.floor(Math.random() * 15 + 3) * box
+    };
+}
 
+document.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowUp" && dir !== "DOWN") dir = "UP";
+    else if (e.key === "ArrowDown" && dir !== "UP") dir = "DOWN";
+    else if (e.key === "ArrowLeft" && dir !== "RIGHT") dir = "LEFT";
+    else if (e.key === "ArrowRight" && dir !== "LEFT") dir = "RIGHT";
+    // Support WASD too
+    else if (e.key === "w" && dir !== "DOWN") dir = "UP";
+    else if (e.key === "s" && dir !== "UP") dir = "DOWN";
+    else if (e.key === "a" && dir !== "RIGHT") dir = "LEFT";
+    else if (e.key === "d" && dir !== "LEFT") dir = "RIGHT";
+});
 
-function drawGame(){ // the function for drawing the game
-    ctx.drawImage(myPlayground, 0, 0);
-    ctx.drawImage(myCarrot, food_coords.x, food_coords.y);
-    ctx.fillStyle = "white";
-    ctx.font = "50px serif";
-    ctx.fillText("Points: " + score, 1*box, 1.7*box);
-    ctx.fillStyle = "#FFE607";
-    for(let i = 0; i < snake.length; i++){
-        ctx.fillRect(snake[i].x, snake[i].y, box, box);
+function draw() {
+    // Clear Background
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Draw Grid (Subtle)
+    ctx.strokeStyle = "rgba(0, 255, 255, 0.05)";
+    ctx.lineWidth = 1;
+    for (let i = 0; i < canvas.width; i += box) {
+        ctx.beginPath();
+        ctx.moveTo(i, 0);
+        ctx.lineTo(i, canvas.height);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(0, i);
+        ctx.lineTo(canvas.width, i);
+        ctx.stroke();
     }
 
-    snakeX = snake[0].x;
-    snakeY = snake[0].y;
+    // Draw UI Bar area
+    ctx.fillStyle = "rgba(0, 255, 255, 0.1)";
+    ctx.fillRect(0, 0, canvas.width, box * 2.5);
 
-    if(dir == "right") snakeX += box;
-    if(dir == "up") snakeY -= box;
-    if(dir == "left") snakeX -= box;
-    if(dir == "down") snakeY += box;
+    // Draw Snake
+    for (let i = 0; i < snake.length; i++) {
+        const isHead = i === 0;
+        ctx.fillStyle = isHead ? "#0ff" : "rgba(0, 255, 255, 0.7)";
 
-    //if the food is eaten
-    if(snakeX == food_coords.x && snakeY == food_coords.y){
-        food_coords = {
-            x: (Math.trunc(17*Math.random())+1)*box,
-            y: (Math.trunc(15*Math.random())+3)*box, 
-            type: "carrot"
+        // Glow effect
+        if (isHead) {
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = "#0ff";
+        } else {
+            ctx.shadowBlur = 0;
         }
+
+        ctx.fillRect(snake[i].x + 1, snake[i].y + 1, box - 2, box - 2);
+        ctx.shadowBlur = 0;
+    }
+
+    // Draw Food
+    ctx.fillStyle = "#ff0055";
+    ctx.shadowBlur = 20;
+    ctx.shadowColor = "#ff0055";
+    ctx.beginPath();
+    ctx.arc(food.x + box / 2, food.y + box / 2, box / 3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Move Snake
+    let snakeX = snake[0].x;
+    let snakeY = snake[0].y;
+
+    if (dir === "LEFT") snakeX -= box;
+    if (dir === "UP") snakeY -= box;
+    if (dir === "RIGHT") snakeX += box;
+    if (dir === "DOWN") snakeY += box;
+
+    // Eat Food
+    if (snakeX === food.x && snakeY === food.y) {
         score++;
+        scoreBoard.innerText = `SCORE: ${score}`;
+        food = spawnFood();
+        // Increase speed
+        if (gameSpeed > 50) {
+            clearInterval(gameInterval);
+            gameSpeed -= 2;
+            gameInterval = setInterval(draw, gameSpeed);
+        }
     } else {
-        snake.pop();
+        if (dir !== "") snake.pop();
     }
 
-    if(snakeX < 0 || snakeX > 18*box){
-        clearInterval(myGame);
+    // Head Position
+    const newHead = { x: snakeX, y: snakeY };
+
+    // Game Over Logic
+    if (dir !== "") {
+        if (snakeX < 0 || snakeX >= canvas.width || snakeY < box * 2.5 || snakeY >= canvas.height || collision(newHead, snake)) {
+            gameOver();
+            return;
+        }
+        snake.unshift(newHead);
     }
-
-    // if (snakeX < 0) {
-    //     snakeX = 17*box;
-    // }
-   
-
-    let newHead = {
-        x: snakeX,
-        y: snakeY
-    }
-
-    snake.unshift(newHead);
-
 }
 
-let myGame = setInterval(drawGame, 100) // we create a refresh of the scene each 100 ms, each 100 ms the funciton drawGame will be used
+function collision(head, array) {
+    for (let i = 0; i < array.length; i++) {
+        if (head.x === array[i].x && head.y === array[i].y) return true;
+    }
+    return false;
+}
+
+function gameOver() {
+    clearInterval(gameInterval);
+    if (score > highScore) {
+        highScore = score;
+        localStorage.setItem("snakeHighScore", highScore);
+        highScoreBoard.innerText = `HIGH: ${highScore}`;
+    }
+
+    overlayTitle.innerText = "NEURAL LINK SEVERED";
+    overlayMsg.innerText = `TOTAL CORES COLLECTED: ${score}`;
+    startBtn.innerText = "Reconnect (Restart)";
+    overlay.classList.remove("hidden");
+}
+
+startBtn.addEventListener("click", init);
+
+// Initial draw to show the grid
+ctx.fillStyle = "#000";
+ctx.fillRect(0, 0, canvas.width, canvas.height);
